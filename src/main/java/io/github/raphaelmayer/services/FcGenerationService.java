@@ -74,6 +74,7 @@ public class FcGenerationService {
         // params into the fc.dataIns, which potentially results in multiple
         // disconnected nodes.
         // The workaround is, that the analyse function receives all input parameters.
+        // Note: This results in duplicated analyse.dataIns in the yaml file.
         for (AfclDataInOut dio : fc.dataIns) {
             fc.workflowBody.get(0).dataIns.add(new AfclDataInOut(dio.name, dio.type, fc.name + '/' + dio.name));
         }

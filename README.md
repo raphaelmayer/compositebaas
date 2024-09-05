@@ -19,11 +19,19 @@
     - option to set region? (CLI)
     - fix hardcoded region in lambdas
 - **tests**
-- **debug-flag** to enable disable verbose console output
+- **debug-flag**
+    - provide settable flag ✓
+    - use it to enable / disable verbose console output
 - **creadentials**
 - **analyse** 
     - should filter fileNames result by type and format
-
+    - some dataIns are duplicated
+- **Directory structure and Output files**
+    - CompositeBaaS output files
+    - temp output workflow
+    - output workflow
+    - function directory structure
+    
 ### Maybe TODO
 - **Multi-Provider FCs**
     - PathFindingService:
