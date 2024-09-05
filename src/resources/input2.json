@@ -1,0 +1,4 @@
+{
+    "input": { "type": "image", "language": "en" },
+    "output": { "type": "audio" }
+}

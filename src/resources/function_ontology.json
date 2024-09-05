@@ -1,0 +1,737 @@
+{
+    "functions": [
+        {
+            "name": "textract",
+            "type": "TextExtraction",
+            "provider": "aws",
+            "description": "Extracts text from documents and images.",
+            "limits": {
+                "maxFileSize": "",
+                "rateLimit": ""
+            },
+            "input": {
+                "type": ["document", "image"],
+                "language": ["en", "es", "it", "pt", "fr", "de"]
+            },
+            "output": {
+                "type": ["text"]
+            },
+            "regions": [
+                "us-east-1",
+                "us-east-2",
+                "us-west-2",
+                "us-west-1",
+                "ca-central-1",
+                "eu-west-1",
+                "eu-west-2",
+                "eu-central-1",
+                "eu-west-3",
+                "ap-southeast-1",
+                "ap-southeast-2",
+                "ap-northeast-2",
+                "ap-south-1",
+                "us-gov-east-1",
+                "us-gov-west-1"
+            ],
+            "dataIns": [
+                {
+                    "name": "fileNames",
+                    "type": "collection",
+                    "required": true
+                }
+            ],
+            "dataOuts": [
+                {
+                    "name": "fileNames",
+                    "type": "collection"
+                }
+            ],
+            "dependencies": []
+        },
+        {
+            "name": "transcribe",
+            "type": "Transcription",
+            "provider": "aws",
+            "description": "Converts speech to text.",
+            "limits": {
+                "maxFileSize": 2000,
+                "rateLimitStreaming": 25,
+                "rateLimitBatch": 250,
+                "maxDuration": 14400
+            },
+            "input": {
+                "type": ["video", "audio"],
+                "language": [
+                    "en",
+                    "ab-GE",
+                    "af-ZA",
+                    "ar-AE",
+                    "ar-SA",
+                    "hy-AM",
+                    "ast-ES",
+                    "az-AZ",
+                    "ba-RU",
+                    "eu-ES",
+                    "be-BY",
+                    "bn-IN",
+                    "bs-BA",
+                    "bg-BG",
+                    "ca-ES",
+                    "ckb-IR",
+                    "ckb-IQ",
+                    "zh-CN",
+                    "zh-TW",
+                    "hr-HR",
+                    "cs-CZ",
+                    "da-DK",
+                    "nl-NL",
+                    "en-AU",
+                    "en-GB",
+                    "en-IN",
+                    "en-IE",
+                    "en-NZ",
+                    "en-AB",
+                    "en-ZA",
+                    "en-US",
+                    "en-WL",
+                    "et-ET",
+                    "fa-IR",
+                    "fi-FI",
+                    "fr-FR",
+                    "fr-CA",
+                    "gl-ES",
+                    "ka-GE",
+                    "de-DE",
+                    "de-CH",
+                    "el-GR",
+                    "gu-IN",
+                    "ha-NG",
+                    "he-IL",
+                    "hi-IN",
+                    "hu-HU",
+                    "is-IS",
+                    "id-ID",
+                    "it-IT",
+                    "ja-JP",
+                    "kab-DZ",
+                    "kn-IN",
+                    "kk-KZ",
+                    "rw-RW",
+                    "ko-KR",
+                    "ky-KG",
+                    "lv-LV",
+                    "lt-LT",
+                    "lg-IN",
+                    "mk-MK",
+                    "ms-MY",
+                    "ml-IN",
+                    "mt-MT",
+                    "mr-IN",
+                    "mhr-RU",
+                    "mn-MN",
+                    "no-NO",
+                    "or-IN",
+                    "ps-AF",
+                    "pl-PL",
+                    "pt-PT",
+                    "pt-BR",
+                    "pa-IN",
+                    "ro-RO",
+                    "ru-RU",
+                    "sr-RS",
+                    "si-LK",
+                    "sk-SK",
+                    "sl-SI",
+                    "so-SO",
+                    "es-ES",
+                    "es-US",
+                    "su-ID",
+                    "sw-KE",
+                    "sw-BI",
+                    "sw-RW",
+                    "sw-TZ",
+                    "sw-UG",
+                    "sv-SE",
+                    "tl-PH",
+                    "ta-IN",
+                    "tt-RU",
+                    "te-IN",
+                    "th-TH",
+                    "tr-TR",
+                    "uk-UA",
+                    "ug-CN",
+                    "uz-UZ",
+                    "vi-VN",
+                    "cy-WL",
+                    "wo-SN",
+                    "zu-ZA"
+                ]
+            },
+            "output": {
+                "type": ["text"]
+            },
+            "regions": [
+                "us-east-2",
+                "us-east-1",
+                "us-west-1",
+                "us-west-2",
+                "ap-east-1",
+                "ap-south-1",
+                "ap-northeast-2",
+                "ap-southeast-1",
+                "ap-southeast-2",
+                "ap-northeast-1",
+                "ca-central-1",
+                "eu-central-1",
+                "eu-west-1",
+                "eu-west-2",
+                "eu-west-3",
+                "eu-north-1",
+                "me-south-1",
+                "sa-east-1",
+                "us-gov-east-1",
+                "us-gov-west-1"
+            ],
+            "dataIns": [
+                {
+                    "name": "fileNames",
+                    "type": "collection",
+                    "required": true
+                },
+                {
+                    "name": "inputLanguage",
+                    "type": "string",
+                    "required": true
+                }
+            ],
+            "dataOuts": [
+                {
+                    "name": "fileNames",
+                    "type": "collection"
+                }
+            ],
+            "dependencies": []
+        },
+        {
+            "name": "polly",
+            "type": "SpeechSynthesis",
+            "provider": "aws",
+            "description": "Converts text into lifelike speech using deep learning.",
+            "limits": {
+                "maxFileSize": "",
+                "rateLimit": ""
+            },
+            "input": {
+                "type": ["text"],
+                "language": [
+                    "en",
+                    "arb",
+                    "ar-AE",
+                    "ca-ES",
+                    "yue-CN",
+                    "cmn-CN",
+                    "da-DK",
+                    "nl-BE",
+                    "nl-NL",
+                    "en-AU",
+                    "en-GB",
+                    "en-IN",
+                    "en-NZ",
+                    "en-ZA",
+                    "en-US",
+                    "en-GB-WLS",
+                    "fi-FI",
+                    "fr-FR",
+                    "fr-BE",
+                    "fr-CA",
+                    "hi-IN",
+                    "de-DE",
+                    "de-AT",
+                    "is-IS",
+                    "it-IT",
+                    "ja-JP",
+                    "ko-KR",
+                    "nb-NO",
+                    "pl-PL",
+                    "pt-BR",
+                    "pt-PT",
+                    "ro-RO",
+                    "ru-RU",
+                    "es-ES",
+                    "es-MX",
+                    "es-US",
+                    "sv-SE",
+                    "tr-TR",
+                    "cy-GB"
+                ]
+            },
+            "output": {
+                "type": ["audio"]
+            },
+            "regions": [
+                "us-east-2",
+                "us-east-1",
+                "us-west-1",
+                "us-west-2",
+                "af-south-1",
+                "ap-east-1",
+                "ap-south-1",
+                "ap-northeast-3",
+                "ap-northeast-2",
+                "ap-southeast-1",
+                "ap-southeast-2",
+                "ap-northeast-1",
+                "ca-central-1",
+                "eu-central-1",
+                "eu-west-1",
+                "eu-west-2",
+                "eu-west-3",
+                "eu-north-1",
+                "me-south-1",
+                "sa-east-1",
+                "us-gov-west-1"
+            ],
+            "dataIns": [
+                {
+                    "name": "fileNames",
+                    "type": "collection",
+                    "required": true
+                }
+            ],
+            "dataOuts": [
+                {
+                    "name": "fileNames",
+                    "type": "collection"
+                }
+            ],
+            "dependencies": []
+        },
+        {
+            "name": "translate",
+            "type": "Translation",
+            "provider": "aws",
+            "description": "Provides natural and fluent language translation.",
+            "limits": {
+                "maxFileSize": "",
+                "rateLimit": ""
+            },
+            "input": {
+                "type": ["text"],
+                "language": [
+                    "en",
+                    "af",
+                    "sq",
+                    "am",
+                    "ar",
+                    "hy",
+                    "az",
+                    "bn",
+                    "bs",
+                    "bg",
+                    "ca",
+                    "zh",
+                    "zh-TW",
+                    "hr",
+                    "cs",
+                    "da",
+                    "fa-AF",
+                    "nl",
+                    "en",
+                    "et",
+                    "fa",
+                    "tl",
+                    "fi",
+                    "fr",
+                    "fr-CA",
+                    "ka",
+                    "de",
+                    "el",
+                    "gu",
+                    "ht",
+                    "ha",
+                    "he",
+                    "hi",
+                    "hu",
+                    "is",
+                    "id",
+                    "ga",
+                    "it",
+                    "ja",
+                    "kn",
+                    "kk",
+                    "ko",
+                    "lv",
+                    "lt",
+                    "mk",
+                    "ms",
+                    "ml",
+                    "mt",
+                    "mr",
+                    "mn",
+                    "no",
+                    "ps",
+                    "pl",
+                    "pt",
+                    "pt-PT",
+                    "pa",
+                    "ro",
+                    "ru",
+                    "sr",
+                    "si",
+                    "sk",
+                    "sl",
+                    "so",
+                    "es",
+                    "es-MX",
+                    "sw",
+                    "sv",
+                    "ta",
+                    "te",
+                    "th",
+                    "tr",
+                    "uk",
+                    "ur",
+                    "uz",
+                    "vi",
+                    "cy"
+                ]
+            },
+            "output": {
+                "language": [
+                    "en",
+                    "af",
+                    "sq",
+                    "am",
+                    "ar",
+                    "hy",
+                    "az",
+                    "bn",
+                    "bs",
+                    "bg",
+                    "ca",
+                    "zh",
+                    "zh-TW",
+                    "hr",
+                    "cs",
+                    "da",
+                    "fa-AF",
+                    "nl",
+                    "en",
+                    "et",
+                    "fa",
+                    "tl",
+                    "fi",
+                    "fr",
+                    "fr-CA",
+                    "ka",
+                    "de",
+                    "el",
+                    "gu",
+                    "ht",
+                    "ha",
+                    "he",
+                    "hi",
+                    "hu",
+                    "is",
+                    "id",
+                    "ga",
+                    "it",
+                    "ja",
+                    "kn",
+                    "kk",
+                    "ko",
+                    "lv",
+                    "lt",
+                    "mk",
+                    "ms",
+                    "ml",
+                    "mt",
+                    "mr",
+                    "mn",
+                    "no",
+                    "ps",
+                    "pl",
+                    "pt",
+                    "pt-PT",
+                    "pa",
+                    "ro",
+                    "ru",
+                    "sr",
+                    "si",
+                    "sk",
+                    "sl",
+                    "so",
+                    "es",
+                    "es-MX",
+                    "sw",
+                    "sv",
+                    "ta",
+                    "te",
+                    "th",
+                    "tr",
+                    "uk",
+                    "ur",
+                    "uz",
+                    "vi",
+                    "cy"
+                ]
+            },
+            "regions": [
+                "us-east-2",
+                "us-east-1",
+                "us-west-1",
+                "us-west-2",
+                "ap-east-1",
+                "ap-south-1",
+                "ap-northeast-2",
+                "ap-southeast-1",
+                "ap-southeast-2",
+                "ap-northeast-1",
+                "ca-central-1",
+                "eu-central-1",
+                "eu-west-1",
+                "eu-west-2",
+                "eu-west-3",
+                "eu-north-1",
+                "us-gov-west-1"
+            ],
+            "dataIns": [
+                {
+                    "name": "fileNames",
+                    "type": "collection",
+                    "required": true
+                },
+                {
+                    "name": "inputLanguage",
+                    "type": "string",
+                    "required": true
+                },
+                {
+                    "name": "outputLanguage",
+                    "type": "string",
+                    "required": true
+                }
+            ],
+            "dataOuts": [
+                {
+                    "name": "fileNames",
+                    "type": "collection"
+                }
+            ],
+            "dependencies": []
+        },
+        {
+            "name": "analyse",
+            "type": "Analyse",
+            "provider": "core",
+            "description": "Evaluates provided input files and intelligently distributes them for optimized processing.",
+            "limits": {},
+            "input": {},
+            "output": {},
+            "regions": [],
+            "dataIns": [
+                {
+                    "name": "inputBucket",
+                    "type": "string",
+                    "required": true
+                },
+                {
+                    "name": "inputFileName",
+                    "type": "string",
+                    "required": false
+                }
+            ],
+            "dataOuts": [
+                {
+                    "name": "fileNames",
+                    "type": "collection"
+                },
+                {
+                    "name": "fileCount",
+                    "type": "number"
+                }
+            ],
+            "dependencies": []
+        },
+        {
+            "name": "splitVideo",
+            "type": "Split",
+            "provider": "core",
+            "description": "",
+            "limits": {},
+            "input": {
+                "type": ["video"]
+            },
+            "output": {
+                "type": ["video", "collection?"]
+            },
+            "regions": [],
+            "dataIns": [
+                {
+                    "name": "inputFileName",
+                    "type": "string",
+                    "required": true
+                }
+            ],
+            "dataOuts": [
+                {
+                    "name": "fileNames",
+                    "type": "collection"
+                },
+                {
+                    "name": "fileCount",
+                    "type": "number"
+                }
+            ],
+            "dependencies": ["ffmpeg"]
+        },
+        {
+            "name": "splitAudio",
+            "type": "Split",
+            "provider": "core",
+            "description": "Splits an audio file into smaller segments for parallel processing.",
+            "limits": {},
+            "input": {
+                "type": ["audio"]
+            },
+            "output": {
+                "type": ["audio", "collection?"]
+            },
+            "regions": [],
+            "dataIns": [
+                {
+                    "name": "inputFileName",
+                    "type": "string",
+                    "required": true
+                }
+            ],
+            "dataOuts": [
+                {
+                    "name": "fileNames",
+                    "type": "collection"
+                },
+                {
+                    "name": "fileCount",
+                    "type": "number"
+                }
+            ],
+            "dependencies": ["ffmpeg"]
+        },
+        {
+            "name": "splitText",
+            "type": "Split",
+            "provider": "core",
+            "description": "Splits a text file into smaller parts for parallel processing.",
+            "limits": {},
+            "input": {
+                "type": ["text"]
+            },
+            "output": {
+                "type": ["text", "collection?"]
+            },
+            "regions": [],
+            "dataIns": [
+                {
+                    "name": "inputFileName",
+                    "type": "string",
+                    "required": true
+                }
+            ],
+            "dataOuts": [
+                {
+                    "name": "fileNames",
+                    "type": "collection"
+                },
+                {
+                    "name": "fileCount",
+                    "type": "number"
+                }
+            ],
+            "dependencies": []
+        },
+        {
+            "name": "mergeVideo",
+            "type": "Merge",
+            "provider": "core",
+            "description": "Merges smaller video segments into a single video file after processing.",
+            "limits": {},
+            "input": {
+                "type": ["video", "collection"]
+            },
+            "output": {
+                "type": ["video"]
+            },
+            "regions": [],
+            "dataIns": [
+                {
+                    "name": "inputFileNames",
+                    "type": "collection",
+                    "required": true
+                }
+            ],
+            "dataOuts": [
+                {
+                    "name": "outputFileName",
+                    "type": "string"
+                }
+            ],
+            "dependencies": ["ffmpeg"]
+        },
+        {
+            "name": "mergeAudio",
+            "type": "Merge",
+            "provider": "core",
+            "description": "Merges smaller audio segments into a single audio file after processing.",
+            "limits": {},
+            "input": {
+                "type": ["audio", "collection"]
+            },
+            "output": {
+                "type": ["audio"]
+            },
+            "regions": [],
+            "dataIns": [
+                {
+                    "name": "inputFileNames",
+                    "type": "collection",
+                    "required": true
+                }
+            ],
+            "dataOuts": [
+                {
+                    "name": "outputFileName",
+                    "type": "string"
+                }
+            ],
+            "dependencies": ["ffmpeg"]
+        },
+        {
+            "name": "mergeText",
+            "type": "Merge",
+            "provider": "core",
+            "description": "",
+            "limits": {},
+            "input": {
+                "type": ["text"]
+            },
+            "output": {
+                "type": ["text", "collection?"]
+            },
+            "regions": [],
+            "dataIns": [
+                {
+                    "name": "fileNames",
+                    "type": "collection",
+                    "required": true
+                }
+            ],
+            "dataOuts": [
+                {
+                    "name": "fileName",
+                    "type": "String"
+                }
+            ],
+            "dependencies": []
+        }
+    ]
+}

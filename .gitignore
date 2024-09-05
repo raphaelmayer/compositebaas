@@ -1,0 +1,8 @@
+.vscode
+
+src/resources/functions/*.zip
+target
+
+apollo-input.json
+someTestName.yaml
+type_mappings.json

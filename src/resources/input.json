@@ -1,0 +1,12 @@
+{
+    "input": {
+        "bucket": "bbbin",
+        "fileName":"asd",
+        "language": "en",
+        "type": "video"
+    },
+    "output": {
+        "language": "de",
+        "type": "text"
+    }
+}
