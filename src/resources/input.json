@@ -1,7 +1,7 @@
 {
     "input": {
-        "bucket": "bbbin",
-        "fileName":"asd",
+        "bucket": "testbucket1234xc",
+        "fileName":"testvideo1.mp4",
         "language": "en",
         "type": "video"
     },

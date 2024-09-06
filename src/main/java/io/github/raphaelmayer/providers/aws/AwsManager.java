@@ -6,17 +6,19 @@ import software.amazon.awssdk.services.sts.StsClient;
 import software.amazon.awssdk.services.iam.IamClient;
 import software.amazon.awssdk.regions.Region;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
 import io.github.raphaelmayer.util.Constants;
 import io.github.raphaelmayer.util.Utils;
 import io.github.raphaelmayer.models.ProviderManager;
+import io.github.raphaelmayer.models.ServiceFunction;
 import software.amazon.awssdk.auth.credentials.ProfileCredentialsProvider;
 
 public class AwsManager implements ProviderManager {
 
-    private final Region REGION = Region.EU_WEST_1; // TODO: set region dynamically. lambdas also need region
+    private final Region REGION = Region.US_EAST_1; // TODO: set region dynamically. lambdas also need region
                                                     // dynamically
     private final List<String> lambdaPolicies = List.of(
             "arn:aws:iam::aws:policy/AmazonS3FullAccess",
@@ -55,7 +57,7 @@ public class AwsManager implements ProviderManager {
     }
 
     @Override
-    public List<String> setupEnvironment(List<String> servicePath) {
+    public List<String> setupEnvironment(List<ServiceFunction> servicePath) {
         List<String> functionUrls = new ArrayList<>();
 
         try {
@@ -73,8 +75,8 @@ public class AwsManager implements ProviderManager {
             System.out.println("Created Lambda Layer ARN: " + layerArn);
 
             // For each service path, upload Lambda and create API integration
-            for (String functionName : servicePath) {
-                String functionUrl = deployLambda(functionName, roleArn, apiId);
+            for (ServiceFunction function : servicePath) {
+                String functionUrl = deployLambda(function, roleArn, apiId);
                 functionUrls.add(functionUrl);
             }
 
@@ -158,13 +160,13 @@ public class AwsManager implements ProviderManager {
      * @param apiId
      * @return
      */
-    private String deployLambda(String functionName, String roleArn, String apiId) {
-        String functionPath = Constants.FUNCTION_DIRECTORY + functionName;
+    private String deployLambda(ServiceFunction function, String roleArn, String apiId) {
+        String functionPath = Constants.FUNCTION_DIRECTORY + File.separator + function.provider + File.separator + function.name;
         String zipPath = Utils.zipFile(functionPath + ".js", functionPath + ".zip");
 
-        String functionArn = lambda.uploadLambda(Constants.LAMBDA_FUNCTION_PREFIX + functionName, zipPath, roleArn);
-        String functionUrl = exposeLambdaThroughApi(apiId, functionArn, functionName, "POST");
-        System.out.println("Deployed function " + functionName + ": " + functionUrl);
+        String functionArn = lambda.uploadLambda(function.name, zipPath, roleArn);
+        String functionUrl = exposeLambdaThroughApi(apiId, functionArn, function.name, "POST");
+        System.out.println("Deployed function " + function.name + ": " + functionUrl);
 
         return functionUrl;
     }

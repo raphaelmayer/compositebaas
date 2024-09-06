@@ -4,7 +4,7 @@ import java.util.List;
 
 public interface ProviderManager {
 
-    public List<String> setupEnvironment(List<String> servicePaths);
+    public List<String> setupEnvironment(List<ServiceFunction> servicePaths);
 
     public void resetEnvironment();
 }

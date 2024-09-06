@@ -1,6 +1,7 @@
 .vscode
 
 src/resources/functions/*.zip
+src/resources/functions/*/*.zip
 target
 
 apollo-input.json

@@ -1,7 +1,5 @@
 package io.github.raphaelmayer;
 
-import java.io.File;
-
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.DefaultParser;
@@ -9,11 +7,9 @@ import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 
-import io.github.raphaelmayer.providers.aws.AwsManager;
 import io.github.raphaelmayer.services.CompositeBaaSOrchestrator;
 import io.github.raphaelmayer.services.DeploymentService;
 import io.github.raphaelmayer.util.AppConfig;
-import io.github.raphaelmayer.util.Constants;
 import io.github.raphaelmayer.util.Utils;
 
 public class CommandLineApplication {
@@ -42,7 +38,7 @@ public class CommandLineApplication {
             } else if (cmd.hasOption("reset")) {
                 resetEnvironment();
             } else if (cmd.hasOption("zip")) {
-                zipFunctions();
+                Utils.zipFunctions();
             } else if (cmd.hasOption("f")) {
                 executeOrchestrator(appConfig);
             } else {
@@ -63,27 +59,6 @@ public class CommandLineApplication {
 
     private void executeOrchestrator(AppConfig appConfig) {
         new CompositeBaaSOrchestrator(appConfig).run();
-    }
-
-    private void zipFunctions() {
-        File functionsDir = new File(Constants.FUNCTION_DIRECTORY);
-
-        if (!functionsDir.exists() || !functionsDir.isDirectory()) {
-            System.out.println("Functions directory not found: " + Constants.FUNCTION_DIRECTORY);
-            return; // TODO: Replace with a custom exception, if necessary.
-        }
-
-        File[] jsFiles = functionsDir.listFiles((dir, name) -> name.endsWith(".js"));
-
-        if (jsFiles == null || jsFiles.length == 0) {
-            System.out.println("No .js files found to zip.");
-            return;
-        }
-
-        for (File jsFile : jsFiles) {
-            String zipFilePath = jsFile.getAbsolutePath().replace(".js", ".zip");
-            Utils.zipFile(jsFile.getAbsolutePath(), zipFilePath);
-        }
     }
 
     private Options buildOptions() {

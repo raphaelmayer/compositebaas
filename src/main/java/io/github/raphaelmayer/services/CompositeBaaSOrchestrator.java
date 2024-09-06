@@ -1,10 +1,10 @@
 package io.github.raphaelmayer.services;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import io.github.raphaelmayer.models.Ontology;
+import io.github.raphaelmayer.models.ServiceFunction;
 import io.github.raphaelmayer.models.Transformation;
 import io.github.raphaelmayer.util.AppConfig;
 import io.github.raphaelmayer.util.Constants;
@@ -23,9 +23,9 @@ public class CompositeBaaSOrchestrator {
     public CompositeBaaSOrchestrator(AppConfig appConfig) {
         this.appConfig = appConfig;
         this.ontology = JsonUtils.parseFile(Constants.ONTOLOGY_PATH, Ontology.class);
+        this.transformation = JsonUtils.parseFile(appConfig.getInputFile(), Transformation.class);
         System.out.println("Available functions:");
         this.ontology.functions.forEach(f -> System.out.println(f.name));
-        this.transformation = JsonUtils.parseFile(appConfig.getInputFile(), Transformation.class);
         System.out.println(this.transformation.toString());
 
         this.pfs = new PathfindingService(this.ontology);
@@ -35,7 +35,7 @@ public class CompositeBaaSOrchestrator {
 
     public void run() {
         // path finding
-        List<String> servicePath = this.pfs.findServicePath(this.transformation);
+        List<ServiceFunction> servicePath = this.pfs.findServicePath(this.transformation);
         System.out.println("final service path: " + servicePath + "\n");
 
         // function deployment
@@ -44,7 +44,7 @@ public class CompositeBaaSOrchestrator {
             functionUrls = this.ds.setupAndDeploy(servicePath);
         } else {
             functionUrls = servicePath.stream()
-                    .map(serviceName -> "https://" + serviceName)
+                    .map(service -> "https://" + service.name)
                     .collect(Collectors.toList());
         }
         System.out.println("URL's: " + functionUrls + "\n");

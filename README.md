@@ -14,6 +14,7 @@
 - **service functions**
     - all functions get and put their result in s3.
     - We could potentially send text directly.
+    - functions should have some kindof configuration params like available memory, timeout
 - **regions**
     - intelligent selection?
     - option to set region? (CLI)
@@ -31,7 +32,14 @@
     - temp output workflow
     - output workflow
     - function directory structure
-    
+- **Comments**
+    - add comments (especially to models)
+- **layers** are not deleted correctly, because we look for layers with prefix compositebaas-, but leayers dont have this prefix
+- **fix**
+    - rename functions to .mjs
+    - Adjust handler: maybe add prefix in uploadLambda?
+    - adjust functions to parse and return data correctly (APIGateway)
+    - might be necessary to add APIGatewayInvoke policy to lambda service role. not sure
 ### Maybe TODO
 - **Multi-Provider FCs**
     - PathFindingService:

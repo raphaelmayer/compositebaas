@@ -14,6 +14,9 @@ import io.github.raphaelmayer.models.Ontology;
 import io.github.raphaelmayer.models.ServiceFunction;
 import io.github.raphaelmayer.models.Transformation;
 
+/*
+ * Returns a List<ServiceFunction> instead of List<String>. This class is not in use right now.
+ */
 public class PathfindingService {
 
     private final Ontology ontology;
@@ -27,18 +30,22 @@ public class PathfindingService {
      * input state to the desired output state.
      *
      * @param transformation The transformation object with input and output states.
-     * @return A list of service names that represent the path to satisfy the
+     * @return A list of ServiceFunction objects that represent the path to satisfy
+     *         the
      *         transformation.
      */
-    public List<String> findServicePath(Transformation transformation) {
-        Map<String, Object> inputState = transformation.getInput();
-        Map<String, Object> targetState = transformation.getOutput();
+    public List<ServiceFunction> findServicePath(Transformation transformation) {
+        Map<String, Object> inputState = transformation.input;
+        Map<String, Object> targetState = transformation.output;
 
         // Perform BFS to find the service path
-        List<String> servicePath = bfsServicePath(inputState, targetState);
+        List<ServiceFunction> servicePath = bfsServicePath(inputState, targetState);
 
         // Add the 'analyse' function to the beginning of the service path
-        servicePath.add(0, "analyse");
+        ServiceFunction analyseFunction = ontology.getFunction("analyse");
+        if (analyseFunction != null) {
+            servicePath.add(0, analyseFunction);
+        }
 
         // Add split / merge functions if applicable
         // addSplitAndMergeFunctions(servicePath, inputState, targetState);
@@ -53,7 +60,7 @@ public class PathfindingService {
      * @param targetState The target output state.
      * @return The service path or an empty list if no path exists.
      */
-    private List<String> bfsServicePath(Map<String, Object> inputState, Map<String, Object> targetState) {
+    private List<ServiceFunction> bfsServicePath(Map<String, Object> inputState, Map<String, Object> targetState) {
         Queue<Node> queue = new LinkedList<>();
         Set<Map<String, Object>> visited = new HashSet<>();
 
@@ -63,7 +70,7 @@ public class PathfindingService {
         while (!queue.isEmpty()) {
             Node currentNode = queue.poll();
             Map<String, Object> currentState = currentNode.state;
-            List<String> currentPath = currentNode.path;
+            List<ServiceFunction> currentPath = currentNode.path;
             System.out.println("\n" + currentNode);
 
             // Check if the current state satisfies the target
@@ -87,8 +94,8 @@ public class PathfindingService {
 
                     // If this state has not been visited yet, enqueue it
                     if (!visited.contains(nextState)) {
-                        List<String> newPath = new ArrayList<>(currentPath);
-                        newPath.add(service.name);
+                        List<ServiceFunction> newPath = new ArrayList<>(currentPath);
+                        newPath.add(service); // Add the service function object to the path
                         queue.add(new Node(nextState, newPath));
                     }
                 }
@@ -151,31 +158,31 @@ public class PathfindingService {
         return nextState;
     }
 
-    private void addSplitAndMergeFunctions(List<String> servicePath, Map<String, Object> inputState,
+    private void addSplitAndMergeFunctions(List<ServiceFunction> servicePath, Map<String, Object> inputState,
             Map<String, Object> targetState) {
         // Get the input and output types
         String inputType = (String) inputState.get("type");
         String outputType = (String) targetState.get("type");
 
         // Determine if a split function is applicable
-        String splitFunction = findFunctionByType("Split", inputType);
+        ServiceFunction splitFunction = findFunctionByType("Split", inputType);
         if (splitFunction != null) {
             // If a split is needed, add it after the 'DistributeFiles' function
             servicePath.add(1, splitFunction);
 
             // If we split, we need to merge, so determine and add the merge function
-            String mergeFunction = findFunctionByType("Merge", outputType);
+            ServiceFunction mergeFunction = findFunctionByType("Merge", outputType);
             if (mergeFunction != null) {
                 servicePath.add(mergeFunction); // Add the merge function at the end
             }
         }
     }
 
-    private String findFunctionByType(String functionType, String dataType) {
+    private ServiceFunction findFunctionByType(String functionType, String dataType) {
         for (ServiceFunction function : ontology.functions) {
             if (function.type.equalsIgnoreCase(functionType)
                     && ((List<String>) function.input.get("type")).contains(dataType)) {
-                return function.name;
+                return function;
             }
         }
         return null;
@@ -186,9 +193,9 @@ public class PathfindingService {
      */
     private static class Node {
         Map<String, Object> state;
-        List<String> path;
+        List<ServiceFunction> path;
 
-        Node(Map<String, Object> state, List<String> path) {
+        Node(Map<String, Object> state, List<ServiceFunction> path) {
             this.state = state;
             this.path = path;
         }
@@ -216,5 +223,4 @@ public class PathfindingService {
                     '}';
         }
     }
-    
 }

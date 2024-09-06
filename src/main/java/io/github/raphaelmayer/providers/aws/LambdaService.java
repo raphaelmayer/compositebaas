@@ -45,7 +45,7 @@ public class LambdaService {
         try {
             SdkBytes lambdaFunctionCode = SdkBytes.fromByteArray(Files.readAllBytes(path));
             CreateFunctionRequest request = CreateFunctionRequest.builder()
-                    .functionName(functionName)
+                    .functionName(Constants.LAMBDA_FUNCTION_PREFIX + functionName)
                     .role(roleArn)
                     .layers(layerArns)
                     .handler(functionName + ".handler")

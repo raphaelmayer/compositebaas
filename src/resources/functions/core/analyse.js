@@ -52,7 +52,7 @@ export const handler = async (event) => {
 
         // Return the output in the required format
         return {
-            files: files,
+            fileNames: files,
             fileCount: fileCount,
         };
     } catch (error) {

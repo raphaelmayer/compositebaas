@@ -33,7 +33,7 @@ public class FcGenerationService {
         this.ontology = ontology;
     }
 
-    public FunctionChoreography generateFunctionChoreography(String fcName, List<String> servicePath,
+    public FunctionChoreography generateFunctionChoreography(String fcName, List<ServiceFunction> servicePath,
             Transformation transformation) {
         FunctionChoreography fc = new FunctionChoreography(fcName);
 
@@ -41,13 +41,12 @@ public class FcGenerationService {
         addDynamicDataFromInputFile(fc, transformation);
 
         // Generate workflow body and connect functions
-        for (String functionName : servicePath) {
-            ServiceFunction f = ontology.getFunction(functionName);
-            AfclBaseFunction bf = new AfclBaseFunction(f.name, f.type);
+        for (ServiceFunction function : servicePath) {
+            AfclBaseFunction afclFunction = new AfclBaseFunction(function.name, function.type);
 
             // Handle dataIns: Check if it's from fc.dataIns or a previous function's
             // dataOut
-            for (DataInOut din : f.dataIns) {
+            for (DataInOut din : function.dataIns) {
                 String source = findDataSource(din.name);
                 if (source == null) {
                     if (din.required) {
@@ -55,18 +54,18 @@ public class FcGenerationService {
                         throw new RuntimeException("No source found for input: " + din.name);
                     }
                 } else {
-                    bf.dataIns.add(new AfclDataInOut(din.name, din.type, source));
+                    afclFunction.dataIns.add(new AfclDataInOut(din.name, din.type, source));
                 }
             }
 
             // Handle dataOuts: Add function's outputs to the available data pool
-            for (DataInOut dout : f.dataOuts) {
-                bf.dataOuts.add(new AfclDataInOut(dout.name, dout.type));
+            for (DataInOut dout : function.dataOuts) {
+                afclFunction.dataOuts.add(new AfclDataInOut(dout.name, dout.type));
                 availableData.put(dout.name,
-                        new AfclDataInOut(dout.name, dout.type, bf.name + "/" + dout.name));
+                        new AfclDataInOut(dout.name, dout.type, afclFunction.name + "/" + dout.name));
             }
 
-            fc.workflowBody.add(bf);
+            fc.workflowBody.add(afclFunction);
         }
 
         // if a fc.dataIn is not used, apollo throws an IllegalStateException, because a
@@ -107,10 +106,10 @@ public class FcGenerationService {
      */
     private void addDynamicDataFromInputFile(FunctionChoreography fc, Transformation transformation) {
         // Process input parameters
-        processTransformationData(fc, transformation.getInput(), "input");
+        processTransformationData(fc, transformation.input, "input");
 
         // Process output parameters
-        processTransformationData(fc, transformation.getOutput(), "output");
+        processTransformationData(fc, transformation.output, "output");
     }
 
     /**
@@ -165,7 +164,6 @@ public class FcGenerationService {
     }
 
     private void saveFunctionChoreography(FunctionChoreography fc) {
-        // ObjectMapper yamlMapper = new ObjectMapper(new YAMLFactory());
         ObjectMapper yamlMapper = YamlConfig.getYamlMapper();
         String fcFileName = fc.name + ".yaml";
 
@@ -177,15 +175,15 @@ public class FcGenerationService {
         }
     }
 
-    public void createTypeMappingsFile(String filePath, List<String> functionNames, List<String> functionUrls) {
+    public void createTypeMappingsFile(String filePath, List<ServiceFunction> servicePath, List<String> functionUrls) {
         List<TypeMapping> typeMappings = new ArrayList<>();
 
         // Assuming each inner List corresponds to a function
-        for (int i = 0; i < functionNames.size(); i++) {
-            String fName = functionNames.get(i);
+        for (int i = 0; i < servicePath.size(); i++) {
+            String fType = servicePath.get(i).type;
 
             Resource r = new Resource("Serverless", functionUrls.get(i));
-            TypeMapping tm = new TypeMapping(fName, List.of(r));
+            TypeMapping tm = new TypeMapping(fType, List.of(r));
 
             typeMappings.add(tm);
         }
@@ -197,5 +195,5 @@ public class FcGenerationService {
     public void createApolloInputFile(String inputFile, String outputFile) {
         JsonUtils.flattenFile(inputFile, outputFile);
     }
-    
+
 }

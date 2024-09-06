@@ -8,7 +8,7 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
 public class Utils {
-    
+
     public static void sleep(long millis) {
         try {
             Thread.sleep(millis);
@@ -53,4 +53,40 @@ public class Utils {
         }
         return str.substring(0, 1).toUpperCase() + str.substring(1);
     }
+
+    public static void zipFunctions() {
+        System.out.print("Zipping all functions...");
+        File functionsDir = new File(Constants.FUNCTION_DIRECTORY);
+
+        if (!functionsDir.exists() || !functionsDir.isDirectory()) {
+            System.out.println("Functions directory not found: " + Constants.FUNCTION_DIRECTORY);
+            return; // TODO: Replace with a custom exception, if necessary.
+        }
+
+        // List all subdirectories within the functions directory
+        File[] subDirs = functionsDir.listFiles(File::isDirectory);
+
+        if (subDirs == null || subDirs.length == 0) {
+            System.out.println("No subdirectories found in functions directory.");
+            return;
+        }
+
+        // Iterate over each subdirectory
+        for (File subDir : subDirs) {
+            File[] jsFiles = subDir.listFiles((dir, name) -> name.endsWith(".js"));
+
+            if (jsFiles == null || jsFiles.length == 0) {
+                System.out.println("No .js files found in directory: " + subDir.getName());
+                continue;
+            }
+
+            // Zip each .js file in the current subdirectory
+            for (File jsFile : jsFiles) {
+                String zipFilePath = jsFile.getAbsolutePath().replace(".js", ".zip");
+                Utils.zipFile(jsFile.getAbsolutePath(), zipFilePath);
+            }
+        }
+        System.out.println("done.");
+    }
+
 }

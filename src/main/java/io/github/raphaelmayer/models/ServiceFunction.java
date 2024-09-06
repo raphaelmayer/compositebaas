@@ -21,7 +21,9 @@ public class ServiceFunction {
 
     @Override
     public String toString() {
-        return provider.toUpperCase() + " " + Utils.capitalize(name);
+        return "ServiceFunction{" +
+                provider.toUpperCase() + " " + Utils.capitalize(name) +
+                '}';
     }
 
 }
