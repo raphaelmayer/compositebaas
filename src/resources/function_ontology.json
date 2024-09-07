@@ -35,6 +35,11 @@
             ],
             "dataIns": [
                 {
+                    "name": "inputBucket",
+                    "type": "string",
+                    "required": true
+                },
+                {
                     "name": "fileNames",
                     "type": "collection",
                     "required": true
@@ -194,6 +199,11 @@
             ],
             "dataIns": [
                 {
+                    "name": "inputBucket",
+                    "type": "string",
+                    "required": true
+                },
+                {
                     "name": "fileNames",
                     "type": "collection",
                     "required": true
@@ -292,6 +302,11 @@
                 "us-gov-west-1"
             ],
             "dataIns": [
+                {
+                    "name": "inputBucket",
+                    "type": "string",
+                    "required": true
+                },
                 {
                     "name": "fileNames",
                     "type": "collection",
@@ -497,6 +512,11 @@
             ],
             "dataIns": [
                 {
+                    "name": "inputBucket",
+                    "type": "string",
+                    "required": true
+                },
+                {
                     "name": "fileNames",
                     "type": "collection",
                     "required": true
@@ -568,8 +588,13 @@
             "regions": [],
             "dataIns": [
                 {
-                    "name": "inputFileName",
+                    "name": "inputBucket",
                     "type": "string",
+                    "required": true
+                },
+                {
+                    "name": "fileNames",
+                    "type": "collection",
                     "required": true
                 }
             ],
@@ -600,8 +625,13 @@
             "regions": [],
             "dataIns": [
                 {
-                    "name": "inputFileName",
+                    "name": "inputBucket",
                     "type": "string",
+                    "required": true
+                },
+                {
+                    "name": "fileNames",
+                    "type": "collection",
                     "required": true
                 }
             ],
@@ -632,8 +662,13 @@
             "regions": [],
             "dataIns": [
                 {
-                    "name": "inputFileName",
+                    "name": "inputBucket",
                     "type": "string",
+                    "required": true
+                },
+                {
+                    "name": "fileNames",
+                    "type": "collection",
                     "required": true
                 }
             ],
@@ -664,7 +699,12 @@
             "regions": [],
             "dataIns": [
                 {
-                    "name": "inputFileNames",
+                    "name": "inputBucket",
+                    "type": "string",
+                    "required": true
+                },
+                {
+                    "name": "fileNames",
                     "type": "collection",
                     "required": true
                 }
@@ -692,7 +732,12 @@
             "regions": [],
             "dataIns": [
                 {
-                    "name": "inputFileNames",
+                    "name": "inputBucket",
+                    "type": "string",
+                    "required": true
+                },
+                {
+                    "name": "fileNames",
                     "type": "collection",
                     "required": true
                 }
@@ -719,6 +764,11 @@
             },
             "regions": [],
             "dataIns": [
+                {
+                    "name": "inputBucket",
+                    "type": "string",
+                    "required": true
+                },
                 {
                     "name": "fileNames",
                     "type": "collection",

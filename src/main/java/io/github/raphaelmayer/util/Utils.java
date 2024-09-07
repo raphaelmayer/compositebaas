@@ -73,16 +73,16 @@ public class Utils {
 
         // Iterate over each subdirectory
         for (File subDir : subDirs) {
-            File[] jsFiles = subDir.listFiles((dir, name) -> name.endsWith(".js"));
+            File[] jsFiles = subDir.listFiles((dir, name) -> name.endsWith(".mjs"));
 
             if (jsFiles == null || jsFiles.length == 0) {
-                System.out.println("No .js files found in directory: " + subDir.getName());
+                System.out.println("No .mjs files found in directory: " + subDir.getName());
                 continue;
             }
 
-            // Zip each .js file in the current subdirectory
+            // Zip each .mjs file in the current subdirectory
             for (File jsFile : jsFiles) {
-                String zipFilePath = jsFile.getAbsolutePath().replace(".js", ".zip");
+                String zipFilePath = jsFile.getAbsolutePath().replace(".mjs", ".zip");
                 Utils.zipFile(jsFile.getAbsolutePath(), zipFilePath);
             }
         }

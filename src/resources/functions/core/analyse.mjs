@@ -3,10 +3,13 @@ import { S3Client, ListObjectsV2Command, HeadObjectCommand } from "@aws-sdk/clie
 const s3 = new S3Client();
 
 export const handler = async (event) => {
-    const inputBucket = JSON.parse(event.body).inputBucket;
-    const inputFileName = event.inputFileName;
+    try {
+        const body = event.body ? JSON.parse(event.body) : event; // payload is different when triggering over APIGateway
+        const inputBucket = body.inputBucket;
+        const inputFileName = body.inputFileName;
 
-        let files = [];
+        let fileNames = [];
+        let fileSizes = [];
 
         if (inputFileName) {
             // If inputFileName is provided, get the specified file's size
@@ -16,10 +19,8 @@ export const handler = async (event) => {
             };
             const command = new HeadObjectCommand(s3Params);
             const s3Object = await s3.send(command);
-            files.push({
-                key: "s3://" + inputBucket + "/" + inputFileName,
-                size: s3Object.ContentLength,
-            });
+            fileNames.push(inputFileName);
+            fileSizes.push(s3Object.ContentLength);
         } else {
             // Otherwise, list all objects in the inputBucket, handling pagination
             let isTruncated = true;
@@ -33,28 +34,33 @@ export const handler = async (event) => {
                 const command = new ListObjectsV2Command(s3Params);
                 const s3Objects = await s3.send(command);
 
-                // Add the files to the result
-                files = files.concat(
-                    s3Objects.Contents.map((object) => ({
-                        key: "s3://" + inputBucket + "/" + object.Key,
-                        size: object.Size,
-                    }))
-                );
+                // Add the fileNames to the result
+                s3Objects.Contents.map((object) => {
+                    fileNames.push(object.Key);
+                    fileSizes.push(object.Size);
+                });
 
-                // Check if there are more files to list
+                // Check if there are more fileNames to list
                 isTruncated = s3Objects.IsTruncated;
                 continuationToken = s3Objects.NextContinuationToken;
             }
         }
 
-        const fileCount = files.length;
+        const fileCount = fileNames.length;
 
-        // Return the output in the required format
         return {
             statusCode: 200,
             body: JSON.stringify({
-                fileNames: files,
+                fileNames: fileNames,
+                fileSizes: fileSizes,
                 fileCount: fileCount,
-            })
+            }),
         };
+    } catch (error) {
+        console.error("Error during analysis:", error);
+        return {
+            statusCode: error.statusCode || 500,
+            body: error.message,
+        };
+    }
 };

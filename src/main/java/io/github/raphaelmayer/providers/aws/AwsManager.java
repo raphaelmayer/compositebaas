@@ -162,7 +162,7 @@ public class AwsManager implements ProviderManager {
      */
     private String deployLambda(ServiceFunction function, String roleArn, String apiId) {
         String functionPath = Constants.FUNCTION_DIRECTORY + File.separator + function.provider + File.separator + function.name;
-        String zipPath = Utils.zipFile(functionPath + ".js", functionPath + ".zip");
+        String zipPath = Utils.zipFile(functionPath + ".mjs", functionPath + ".zip");
 
         String functionArn = lambda.uploadLambda(function.name, zipPath, roleArn);
         String functionUrl = exposeLambdaThroughApi(apiId, functionArn, function.name, "POST");

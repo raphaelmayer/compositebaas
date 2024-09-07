@@ -24,9 +24,9 @@ async function loadFromS3(bucket, key) {
         try {
             const response = await s3Client.send(command);
             let responseDataChunks = [];
-            response.Body.once('error', err => reject(err));
-            response.Body.on('data', chunk => responseDataChunks.push(chunk));
-            response.Body.once('end', () => resolve(responseDataChunks.join('')));
+            response.Body.once("error", (err) => reject(err));
+            response.Body.on("data", (chunk) => responseDataChunks.push(chunk));
+            response.Body.once("end", () => resolve(responseDataChunks.join("")));
         } catch (err) {
             return reject(err);
         }
@@ -35,20 +35,21 @@ async function loadFromS3(bucket, key) {
 
 // Helper function to parse the file name (remove extension)
 function parseFileName(fileName) {
-    const lastDotIndex = fileName.lastIndexOf('.');
+    const lastDotIndex = fileName.lastIndexOf(".");
     const name = fileName.substring(0, lastDotIndex);
     return name;
 }
 
 export const handler = async (event) => {
-    const inputBucket = event.inputBucket;
-    const outputBucket = event.outputBucket || inputBucket; 
-    const inputLanguage = event.inputLanguage || "auto";    
-    const outputLanguage = event.outputLanguage || "en-US"; 
-    const fileNames = event.fileNames;                      
-    const outputKeys = [];                                  
-
     try {
+        const body = event.body ? JSON.parse(event.body) : event; // payload is different when triggering over APIGateway
+        const inputBucket = body.inputBucket;
+        const outputBucket = body.outputBucket || inputBucket;
+        const inputLanguage = body.inputLanguage || "auto";
+        const outputLanguage = body.outputLanguage || "en-US";
+        const fileNames = body.fileNames;
+        const outputKeys = [];
+
         for (const fileName of fileNames) {
             const inputText = await loadFromS3(inputBucket, fileName);
             console.log(`Loaded file from S3: ${fileName}`);
@@ -59,7 +60,7 @@ export const handler = async (event) => {
                 SourceLanguageCode: inputLanguage,
                 TargetLanguageCode: outputLanguage,
                 Settings: {
-                    Formality: "FORMAL",  // Change to "INFORMAL" if needed
+                    Formality: "FORMAL", // Change to "INFORMAL" if needed
                     Profanity: "MASK",
                     Brevity: "ON",
                 },
@@ -78,11 +79,14 @@ export const handler = async (event) => {
         }
 
         return {
-            fileNames: outputKeys,
+            statusCode: 200,
+            body: JSON.stringify({ fileNames: outputKeys }),
         };
-
     } catch (error) {
-        console.error('Error during translation process:', error);
-        return { error: error.message };
+        console.error("Error during translation process:", error);
+        return {
+            statusCode: error.statusCode || 500,
+            body: error.message,
+        };
     }
 };

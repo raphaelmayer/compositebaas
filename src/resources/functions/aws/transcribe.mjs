@@ -71,12 +71,13 @@ async function pollTranscriptionJob(transcribe, jobId) {
 }
 
 export const handler = async (event) => {
-    const fileNames = event.fileNames;  
-    const inputBucket = event.inputBucket;
-    const inputLanguage = event.inputLanguage || "en-US"; 
-    const outputKeys = []; 
-
     try {
+        const body = event.body ? JSON.parse(event.body) : event; // payload is different when triggering over APIGateway
+        const fileNames = body.fileNames;
+        const inputBucket = body.inputBucket;
+        const inputLanguage = "en-US"; // should read from body.inputLanguage, but XX language codes need to be adjusted.
+        const outputKeys = [];
+
         for (const fileName of fileNames) {
             // Submit the transcription job
             const jobName = `${fileName.replace(/\.[^/.]+$/, "")}-transcribed-${Date.now()}.txt`;
@@ -116,11 +117,16 @@ export const handler = async (event) => {
         }
 
         return {
-            fileNames: outputKeys,
+            statusCode: 200,
+            body: JSON.stringify({
+                fileNames: outputKeys,
+            }),
         };
-
     } catch (error) {
         console.error("Error during transcription:", error);
-        return { error: error.message };
+        return {
+            statusCode: error.statusCode || 500,
+            body: error.message,
+        };
     }
 };

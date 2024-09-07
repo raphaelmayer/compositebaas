@@ -12,9 +12,8 @@
     - decide how to parallelize (nested vs seq)
 - **handle lambda limitations** appropriately (file sizes, durations)
 - **service functions**
-    - all functions get and put their result in s3.
     - We could potentially send text directly.
-    - functions should have some kindof configuration params like available memory, timeout
+    - functions should have some kindof configuration params like available memory, timeout in ontology.
 - **regions**
     - intelligent selection?
     - option to set region? (CLI)
@@ -35,11 +34,8 @@
 - **Comments**
     - add comments (especially to models)
 - **layers** are not deleted correctly, because we look for layers with prefix compositebaas-, but leayers dont have this prefix
-- **fix**
-    - rename functions to .mjs
-    - Adjust handler: maybe add prefix in uploadLambda?
-    - adjust functions to parse and return data correctly (APIGateway)
-    - might be necessary to add APIGatewayInvoke policy to lambda service role. not sure
+- **Language codes**: AWS uses the format xx-XX (almost?) everywhere. We use xx 
+
 ### Maybe TODO
 - **Multi-Provider FCs**
     - PathFindingService:
@@ -54,4 +50,3 @@
     - Misc:
         - service path needs to contain more than just a function name
 - **generate config.xml** for apollo?
-- **Language codes**: AWS uses the format xx-XX (almost?) everywhere. We use xx 
