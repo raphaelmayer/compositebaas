@@ -36,7 +36,7 @@ async function getFileContent(bucket, fileName) {
 export const handler = async (event) => {
     try {
         const body = event.body ? JSON.parse(event.body) : event; // payload is different when triggering over APIGateway
-        const fileNames = body.fileNames;
+        const fileNames = Array.isArray(body.fileNames) ? body.fileNames : [body.fileNames];
         const inputBucket = body.inputBucket;
         const outputBucket = body.outputBucket || inputBucket;
         const voiceId = body.voiceId || "Joanna";

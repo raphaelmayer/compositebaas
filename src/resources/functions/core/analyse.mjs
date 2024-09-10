@@ -6,21 +6,23 @@ export const handler = async (event) => {
     try {
         const body = event.body ? JSON.parse(event.body) : event; // payload is different when triggering over APIGateway
         const inputBucket = body.inputBucket;
-        const inputFileName = body.inputFileName;
+        const inputFileNames = body.inputFileNames;
 
         let fileNames = [];
         let fileSizes = [];
 
-        if (inputFileName) {
-            // If inputFileName is provided, get the specified file's size
-            const s3Params = {
-                Bucket: inputBucket,
-                Key: inputFileName,
-            };
-            const command = new HeadObjectCommand(s3Params);
-            const s3Object = await s3.send(command);
-            fileNames.push(inputFileName);
-            fileSizes.push(s3Object.ContentLength);
+        if (inputFileNames) {
+            // If inputFileNames is provided, iterate only over those
+            for (const inputFileName of inputFileNames) {
+                const s3Params = {
+                    Bucket: inputBucket,
+                    Key: inputFileName,
+                };
+                const command = new HeadObjectCommand(s3Params);
+                const s3Object = await s3.send(command);
+                fileNames.push(inputFileName);
+                fileSizes.push(s3Object.ContentLength);
+            }
         } else {
             // Otherwise, list all objects in the inputBucket, handling pagination
             let isTruncated = true;

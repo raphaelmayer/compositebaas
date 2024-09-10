@@ -73,7 +73,7 @@ async function pollTranscriptionJob(transcribe, jobId) {
 export const handler = async (event) => {
     try {
         const body = event.body ? JSON.parse(event.body) : event; // payload is different when triggering over APIGateway
-        const fileNames = body.fileNames;
+        const fileNames = Array.isArray(body.fileNames) ? body.fileNames : [body.fileNames];
         const inputBucket = body.inputBucket;
         const inputLanguage = "en-US"; // should read from body.inputLanguage, but XX language codes need to be adjusted.
         const outputKeys = [];
