@@ -51,7 +51,12 @@
                     "type": "collection"
                 }
             ],
-            "dependencies": []
+            "dependencies": [],
+            "config": {
+                "memory": 512,
+                "timeout": 60,
+                "runtime": "nodejs20.x"
+            }
         },
         {
             "name": "transcribe",
@@ -220,7 +225,12 @@
                     "type": "collection"
                 }
             ],
-            "dependencies": []
+            "dependencies": [],
+            "config": {
+                "memory": 512,
+                "timeout": 60,
+                "runtime": "nodejs20.x"
+            }
         },
         {
             "name": "polly",
@@ -319,7 +329,12 @@
                     "type": "collection"
                 }
             ],
-            "dependencies": []
+            "dependencies": [],
+            "config": {
+                "memory": 512,
+                "timeout": 60,
+                "runtime": "nodejs20.x"
+            }
         },
         {
             "name": "translate",
@@ -538,7 +553,12 @@
                     "type": "collection"
                 }
             ],
-            "dependencies": []
+            "dependencies": [],
+            "config": {
+                "memory": 512,
+                "timeout": 60,
+                "runtime": "nodejs20.x"
+            }
         },
         {
             "name": "analyse",
@@ -571,7 +591,12 @@
                     "type": "number"
                 }
             ],
-            "dependencies": []
+            "dependencies": [],
+            "config": {
+                "memory": 512,
+                "timeout": 60,
+                "runtime": "nodejs20.x"
+            }
         },
         {
             "name": "splitVideo",
@@ -608,7 +633,12 @@
                     "type": "number"
                 }
             ],
-            "dependencies": ["ffmpeg"]
+            "dependencies": ["ffmpeg"],
+            "config": {
+                "memory": 512,
+                "timeout": 60,
+                "runtime": "nodejs20.x"
+            }
         },
         {
             "name": "splitAudio",
@@ -645,7 +675,12 @@
                     "type": "number"
                 }
             ],
-            "dependencies": ["ffmpeg"]
+            "dependencies": ["ffmpeg"],
+            "config": {
+                "memory": 512,
+                "timeout": 60,
+                "runtime": "nodejs20.x"
+            }
         },
         {
             "name": "splitText",
@@ -682,7 +717,12 @@
                     "type": "number"
                 }
             ],
-            "dependencies": []
+            "dependencies": [],
+            "config": {
+                "memory": 512,
+                "timeout": 60,
+                "runtime": "nodejs20.x"
+            }
         },
         {
             "name": "mergeVideo",
@@ -715,7 +755,12 @@
                     "type": "string"
                 }
             ],
-            "dependencies": ["ffmpeg"]
+            "dependencies": ["ffmpeg"],
+            "config": {
+                "memory": 512,
+                "timeout": 60,
+                "runtime": "nodejs20.x"
+            }
         },
         {
             "name": "mergeAudio",
@@ -748,7 +793,12 @@
                     "type": "string"
                 }
             ],
-            "dependencies": ["ffmpeg"]
+            "dependencies": ["ffmpeg"],
+            "config": {
+                "memory": 512,
+                "timeout": 60,
+                "runtime": "nodejs20.x"
+            }
         },
         {
             "name": "mergeText",
@@ -781,7 +831,12 @@
                     "type": "String"
                 }
             ],
-            "dependencies": []
+            "dependencies": [],
+            "config": {
+                "memory": 512,
+                "timeout": 60,
+                "runtime": "nodejs20.x"
+            }
         }
     ]
 }

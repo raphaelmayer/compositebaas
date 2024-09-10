@@ -8,6 +8,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import io.github.raphaelmayer.models.ServiceFunction;
 import io.github.raphaelmayer.util.Constants;
 import software.amazon.awssdk.core.SdkBytes;
 import software.amazon.awssdk.services.lambda.LambdaClient;
@@ -39,17 +40,23 @@ public class LambdaService {
         this.accountId = accountId;
     }
 
-    public String uploadLambda(String functionName, String zipFilePath, String roleArn, List<String> layerArns) {
+    public String uploadLambda(ServiceFunction function, String zipFilePath, String roleArn, List<String> layerArns) {
         Path path = Paths.get(zipFilePath);
+
+        String runtime = (function.config.runtime != null) ? function.config.runtime : Constants.LAMBDA_RUNTIME;
+        Integer memorySize = (function.config.memory != null) ? function.config.memory : 128; // Default 128 MB
+        Integer timeout = (function.config.timeout != null) ? function.config.timeout : 3; // Default 3 seconds
 
         try {
             SdkBytes lambdaFunctionCode = SdkBytes.fromByteArray(Files.readAllBytes(path));
             CreateFunctionRequest request = CreateFunctionRequest.builder()
-                    .functionName(Constants.LAMBDA_FUNCTION_PREFIX + functionName)
+                    .functionName(Constants.LAMBDA_FUNCTION_PREFIX + function.name)
                     .role(roleArn)
                     .layers(layerArns)
-                    .handler(functionName + ".handler")
-                    .runtime(Constants.LAMBDA_RUNTIME) // Make sure the runtime is currently supported
+                    .handler(function.name + ".handler")
+                    .runtime(runtime)
+                    .memorySize(memorySize)
+                    .timeout(timeout)
                     .code(software.amazon.awssdk.services.lambda.model.FunctionCode.builder()
                             .zipFile(lambdaFunctionCode)
                             .build())
@@ -63,8 +70,8 @@ public class LambdaService {
         }
     }
 
-    public String uploadLambda(String functionName, String zipFilePath, String roleArn) {
-        return uploadLambda(functionName, zipFilePath, roleArn, Collections.emptyList());
+    public String uploadLambda(ServiceFunction function, String zipFilePath, String roleArn) {
+        return uploadLambda(function, zipFilePath, roleArn, Collections.emptyList());
     }
 
     public void deleteLambda(String functionName) {
