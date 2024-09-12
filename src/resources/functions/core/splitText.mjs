@@ -51,10 +51,11 @@ function splitText(text, numParts) {
 
 // Main handler function
 export const handler = async (event) => {
-    const inputBucket = event.inputBucket;
-    const outputBucket = event.outputBucket || inputBucket;
-    const fileNames = event.fileNames;
-    const numParts = event.numParts || 2; // Default to 2 parts if not specified
+    const body = event.body ? JSON.parse(event.body) : event; // payload is different when triggering over APIGateway
+    const fileNames = Array.isArray(body.fileNames) ? body.fileNames : [body.fileNames];
+    const inputBucket = body.inputBucket;
+    const outputBucket = body.outputBucket || inputBucket;
+    const numParts = body.numParts || 2; // Default to 2 parts if not specified
     const outputKeys = [];
 
     try {
@@ -76,11 +77,16 @@ export const handler = async (event) => {
         }
 
         return {
-            fileNames: outputKeys,
+            statusCode: 200,
+            body: JSON.stringify({
+                fileNames: outputKeys,
+            }),
         };
-        
     } catch (error) {
         console.error("Error during splitting process:", error);
-        return { error: error.message };
+        return {
+            statusCode: error.statusCode || 500,
+            body: error.message,
+        };
     }
 };

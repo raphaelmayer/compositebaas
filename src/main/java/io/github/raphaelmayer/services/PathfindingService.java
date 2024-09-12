@@ -48,7 +48,7 @@ public class PathfindingService {
         }
 
         // Add split / merge functions if applicable
-        // addSplitAndMergeFunctions(servicePath, inputState, targetState);
+        addSplitAndMergeFunctions(servicePath, inputState, targetState);
 
         return servicePath;
     }

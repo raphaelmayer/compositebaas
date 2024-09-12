@@ -633,9 +633,9 @@
                     "type": "number"
                 }
             ],
-            "dependencies": ["ffmpeg"],
+            "dependencies": ["ffmpeg", "ffprobe"],
             "config": {
-                "memory": 512,
+                "memory": 2048,
                 "timeout": 60,
                 "runtime": "nodejs20.x"
             }
@@ -751,8 +751,8 @@
             ],
             "dataOuts": [
                 {
-                    "name": "outputFileName",
-                    "type": "string"
+                    "name": "fileNames",
+                    "type": "collection"
                 }
             ],
             "dependencies": ["ffmpeg"],
@@ -789,8 +789,8 @@
             ],
             "dataOuts": [
                 {
-                    "name": "outputFileName",
-                    "type": "string"
+                    "name": "fileNames",
+                    "type": "collection"
                 }
             ],
             "dependencies": ["ffmpeg"],
@@ -827,8 +827,8 @@
             ],
             "dataOuts": [
                 {
-                    "name": "fileName",
-                    "type": "String"
+                    "name": "fileNames",
+                    "type": "collection"
                 }
             ],
             "dependencies": [],

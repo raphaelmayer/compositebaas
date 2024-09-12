@@ -120,7 +120,7 @@ public class LambdaService {
 
             PublishLayerVersionResponse response = lambdaClient.publishLayerVersion(request);
 
-            return response.layerArn();
+            return response.layerArn() + ":" + response.version();
 
         } catch (IOException e) {
             e.printStackTrace();

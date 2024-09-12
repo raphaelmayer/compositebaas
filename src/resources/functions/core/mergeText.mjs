@@ -33,9 +33,10 @@ async function saveInS3(data, bucket, key) {
 
 // Merge multiple text files from S3
 export const handler = async (event) => {
-    const inputBucket = event.inputBucket;
-    const outputBucket = event.outputBucket || inputBucket;
-    const fileNames = event.fileNames; // Array of file names to be merged
+    const body = event.body ? JSON.parse(event.body) : event; // payload is different when triggering over APIGateway
+    const fileNames = Array.isArray(body.fileNames) ? body.fileNames : [body.fileNames];
+    const inputBucket = body.inputBucket;
+    const outputBucket = body.outputBucket || inputBucket;
     const outputFileName = `${fileNames[0].split("-")[0]}-merged.txt`;
     let mergedText = "";
 
@@ -52,11 +53,16 @@ export const handler = async (event) => {
         console.log(`Merged file saved to S3: ${outputFileName}`);
 
         return {
-            fileNames: [outputFileName],
+            statusCode: 200,
+            body: JSON.stringify({
+                fileNames: [outputFileName],
+            }),
         };
-        
     } catch (error) {
         console.error("Error during merge process:", error);
-        return { error: error.message };
+        return {
+            statusCode: error.statusCode || 500,
+            body: error.message,
+        };
     }
 };
