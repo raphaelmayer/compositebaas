@@ -1,9 +1,9 @@
-package io.github.raphaelmayer.util;
+package io.github.raphaelmayer.models;
 
 public class AppConfig {
 
     private String inputFile;
-    private boolean noDeploy;
+    private boolean deploy;
     private boolean debug;
 
     // Getters and setters for each field
@@ -15,12 +15,12 @@ public class AppConfig {
         this.inputFile = inputFile;
     }
 
-    public boolean isNoDeploy() {
-        return noDeploy;
+    public boolean isDeploy() {
+        return deploy;
     }
 
-    public void setNoDeploy(boolean noDeploy) {
-        this.noDeploy = noDeploy;
+    public void setDeploy(boolean deploy) {
+        this.deploy = deploy;
     }
 
     public boolean isDebug() {

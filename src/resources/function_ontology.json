@@ -608,7 +608,7 @@
                 "type": ["video"]
             },
             "output": {
-                "type": ["video", "collection?"]
+                "type": ["video"]
             },
             "regions": [],
             "dataIns": [
@@ -650,7 +650,7 @@
                 "type": ["audio"]
             },
             "output": {
-                "type": ["audio", "collection?"]
+                "type": ["audio"]
             },
             "regions": [],
             "dataIns": [
@@ -692,7 +692,7 @@
                 "type": ["text"]
             },
             "output": {
-                "type": ["text", "collection?"]
+                "type": ["text"]
             },
             "regions": [],
             "dataIns": [
@@ -731,7 +731,7 @@
             "description": "Merges smaller video segments into a single video file after processing.",
             "limits": {},
             "input": {
-                "type": ["video", "collection"]
+                "type": ["video"]
             },
             "output": {
                 "type": ["video"]
@@ -769,7 +769,7 @@
             "description": "Merges smaller audio segments into a single audio file after processing.",
             "limits": {},
             "input": {
-                "type": ["audio", "collection"]
+                "type": ["audio"]
             },
             "output": {
                 "type": ["audio"]
@@ -810,7 +810,7 @@
                 "type": ["text"]
             },
             "output": {
-                "type": ["text", "collection?"]
+                "type": ["text"]
             },
             "regions": [],
             "dataIns": [

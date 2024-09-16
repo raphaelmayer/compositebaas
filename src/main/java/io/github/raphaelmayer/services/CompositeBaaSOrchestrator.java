@@ -1,12 +1,11 @@
 package io.github.raphaelmayer.services;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
+import io.github.raphaelmayer.models.AppConfig;
 import io.github.raphaelmayer.models.Ontology;
 import io.github.raphaelmayer.models.ServiceFunction;
 import io.github.raphaelmayer.models.Transformation;
-import io.github.raphaelmayer.util.AppConfig;
 import io.github.raphaelmayer.util.Constants;
 import io.github.raphaelmayer.util.JsonUtils;
 
@@ -40,19 +39,15 @@ public class CompositeBaaSOrchestrator {
 
         // function deployment
         List<String> functionUrls;
-        if (!this.appConfig.isNoDeploy()) {
+        if (this.appConfig.isDeploy()) {
             functionUrls = this.ds.setupAndDeploy(servicePath);
-        } else {
-            functionUrls = servicePath.stream()
-                    .map(service -> "https://" + service.name)
-                    .collect(Collectors.toList());
+            System.out.println("URL's: " + functionUrls + "\n");
+            fcs.createTypeMappingsFile("type_mappings.json", servicePath, functionUrls);
         }
-        System.out.println("URL's: " + functionUrls + "\n");
 
         // fc generation (including all files required for execution)
-        fcs.generateFunctionChoreography("someTestName", servicePath, this.transformation);
-        fcs.createTypeMappingsFile("type_mappings.json", servicePath, functionUrls);
         fcs.createApolloInputFile(this.appConfig.getInputFile(), "apollo-input.json");
+        fcs.generateFunctionChoreography("someTestName", servicePath, this.transformation);
     }
 
 }

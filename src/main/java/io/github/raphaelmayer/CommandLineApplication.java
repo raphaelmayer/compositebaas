@@ -7,9 +7,9 @@ import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 
+import io.github.raphaelmayer.models.AppConfig;
 import io.github.raphaelmayer.services.CompositeBaaSOrchestrator;
 import io.github.raphaelmayer.services.DeploymentService;
-import io.github.raphaelmayer.util.AppConfig;
 import io.github.raphaelmayer.util.Utils;
 
 public class CommandLineApplication {
@@ -30,7 +30,7 @@ public class CommandLineApplication {
             AppConfig appConfig = new AppConfig();
     
             appConfig.setInputFile(cmd.getOptionValue("f"));
-            appConfig.setNoDeploy(cmd.hasOption("nodeploy"));
+            appConfig.setDeploy(cmd.hasOption("deploy"));
             appConfig.setDebug(cmd.hasOption("debug"));
 
             if (cmd.hasOption("h")) {
@@ -68,7 +68,7 @@ public class CommandLineApplication {
         options.addOption("f", "file", true, "Specify the path to the input file required for workflow generation.");
         options.addOption("reset", false, "Reset the cloud environment without running the workflow generation.");
         options.addOption("zip", false, "Zip all JavaScript (.js) files in the functions directory.");
-        options.addOption("nodeploy", false, "Run the workflow generation without deploying resources.");
+        options.addOption("deploy", false, "Run the workflow generation and deploy all required resources.");
         options.addOption("debug", false, "Run the workflow generation in debug mode with additional logging.");
 
         return options;
@@ -84,11 +84,11 @@ public class CommandLineApplication {
                 "  --reset           Reset the cloud environment to the initial state.\n" +
                 "  -h, --help        Display this help message.\n\n" +
                 "Flags (for use with -f):\n" +
-                "  --nodeploy        Run without deploying resources.\n" +
+                "  --deploy        Run with deploying all required resources.\n" +
                 "  --debug           Enable debug mode for detailed output.\n";
 
         String usage = "Usage:\n" +
-                "  CompositeBaaS -f <arg> [--nodeploy] [--debug]\n" +
+                "  CompositeBaaS -f <arg> [--deploy] [--debug]\n" +
                 "  CompositeBaaS --zip\n" +
                 "  CompositeBaaS --reset\n" +
                 "  CompositeBaaS -h | --help";
@@ -96,8 +96,8 @@ public class CommandLineApplication {
         String footer = "\nExamples:\n" +
                 "  java -jar compositebaas.jar -f config.json         Generate workflow using the specified config file\n"
                 +
-                "  java -jar compositebaas.jar -f config.json --nodeploy --debug\n" +
-                "      Generate workflow in debug mode without deployment\n" +
+                "  java -jar compositebaas.jar -f config.json --deploy --debug\n" +
+                "      Generate workflow in debug mode including deployment\n" +
                 "  java -jar compositebaas.jar --zip                  Zip all functions in the functions directory\n" +
                 "  java -jar compositebaas.jar --reset                Reset the cloud environment\n";
 
