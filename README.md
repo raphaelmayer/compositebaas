@@ -4,7 +4,7 @@ CompositeBaaS is ...
 
 ## Quickstart
 
-### Dependencies
+### How to install
 
 TODO
 
@@ -102,7 +102,7 @@ To extend CompositeBaaS by adding a custom function, follow these steps:
 
 2. **Implement the function as a serverless function:**
    Write the code for the serverless function and place it in the appropriate directory:  
-   `resources/functions/<provider>/<function>.mjs`.
+   `resources/functions/<provider>/<name>.mjs`.
 
     CompositeBaaS will automatically detect and integrate the function based on this directory structure. For example you might want to place your custom functions in a directory `custom` within the `functions` directory. In this case use `"custom"` as a `provider` for your function.
 
@@ -112,7 +112,7 @@ _Note: It is possible to implement functions in various different programming la
 
 ### Adding a layer
 
-CompositeBaaS provides the following layer by default:
+CompositeBaaS provides the following layers by default:
 
 -   ffmpeg (nodejs20x)
 -   ffprobe (nodejs20x)
@@ -150,6 +150,8 @@ To add a custom layer ...
     -   output workflow
     -   function directory structure
 -   **tests**
+-   **fileCount**
+    - is it even necessary? (analyse and split functions)
 
 ### Optional / Low Priority:
 
