@@ -96,15 +96,75 @@ To extend CompositeBaaS by adding a custom function, follow these steps:
     }
     ```
 
-    This JSON structure defines key properties like the function’s name, type, provider, and configuration, which CompositeBaaS uses to integrate the function into workflows.
+    This JSON structure defines key properties like the function’s name, type, provider, and configuration, which CompositeBaaS uses to integrate the function into workflows. Attributes in the input object specify requirements for the particular service function, while outputs denote the particular transformation the service provides.
 
-    To specify input and output arguments of your serverless function, use the dedicated dataIn and dataOut fields. *TODO*
+    To specify input and output arguments of your serverless function, use the dedicated dataIn and dataOut fields. (TODO)
+    
+    ```DataIn
+    
+                {
+                    "name": "attributeName",
+                    "type": "attributeType",
+                    "required": boolean
+                }
+    ```
+    
+    ```DataOut
+    
+                {
+                    "name": "attributeName",
+                    "type": "attributeType"
+                }
+    ```
+
+    CompositeBaaS will look for these attribute names when looking for services to apply for the specified intent/transformation. 
+
+    *Note that attributes will be prefixed by their parent object from the input file. This means that a language attribute will be called inputLanguage or outputLanguage depending on where in the input file it was specified.*
 
 2. **Implement the function as a serverless function:**
    Write the code for the serverless function and place it in the appropriate directory:  
    `resources/functions/<provider>/<name>.mjs`.
 
     CompositeBaaS will automatically detect and integrate the function based on this directory structure. For example you might want to place your custom functions in a directory `custom` within the `functions` directory. In this case use `"custom"` as a `provider` for your function.
+
+    To implement a function use the template provided here (TODO) or copy the template from down below:
+    ```
+    export const handler = async (event) => {
+        try {
+            const body = event.body ? JSON.parse(event.body) : event; // payload is different when triggering over APIGateway
+            const fileNames = Array.isArray(body.fileNames) ? body.fileNames : [body.fileNames];
+            const inputBucket = body.inputBucket;
+            const outputBucket = body.outputBucket || inputBucket;
+
+            // parse parameters here
+
+            const outputKeys = [];
+
+            for (const fileName of fileNames) {
+                
+                // implement function here
+
+                const outputKey = ""; // save file in s3 and store outputKey here
+                outputKeys.push(outputKey);
+            }
+
+            return {
+                statusCode: 200,
+                body: JSON.stringify({
+                    fileNames: outputKeys,
+                }),
+            };
+        } catch (error) {
+            console.error("Error during my test service:", error);
+            return {
+                statusCode: error.statusCode || 500,
+                body: error.message,
+            };
+        }
+    };
+    ```
+
+    Your function should expect... (TODO)
 
 If you want to see this in more detail, check out the resources directory, where you can find the `function_ontology.json` and the `functions` directory.
 
@@ -157,6 +217,7 @@ To add a custom layer ...
 
 -   **debug-flag**
     -   use it to enable / disable verbose console output
+    - rename *verbose*?
 -   **Comments**
     -   add comments (especially to models)
 -   **Multi-Provider FCs**

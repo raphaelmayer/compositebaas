@@ -19,12 +19,12 @@ public class CompositeBaaSOrchestrator {
     private final Transformation transformation;
     private final AppConfig appConfig;
 
-    public CompositeBaaSOrchestrator(AppConfig appConfig) {
+    public CompositeBaaSOrchestrator(final AppConfig appConfig) {
         this.appConfig = appConfig;
         this.ontology = JsonUtils.parseFile(Constants.ONTOLOGY_PATH, Ontology.class);
-        this.transformation = JsonUtils.parseFile(appConfig.getInputFile(), Transformation.class);
         System.out.println("Available functions:");
         this.ontology.functions.forEach(f -> System.out.println(f.name));
+        this.transformation = JsonUtils.parseFile(appConfig.getInputFilePath(), Transformation.class);
         System.out.println(this.transformation.toString());
 
         this.pfs = new PathfindingService(this.ontology);
@@ -33,6 +33,8 @@ public class CompositeBaaSOrchestrator {
     }
 
     public void run() {
+        String wfName = this.appConfig.getWorkflowName();
+
         // path finding
         List<ServiceFunction> servicePath = this.pfs.findServicePath(this.transformation);
         System.out.println("final service path: " + servicePath + "\n");
@@ -42,12 +44,12 @@ public class CompositeBaaSOrchestrator {
         if (this.appConfig.isDeploy()) {
             functionUrls = this.ds.setupAndDeploy(servicePath);
             System.out.println("URL's: " + functionUrls + "\n");
-            fcs.createTypeMappingsFile("type_mappings.json", servicePath, functionUrls);
+            fcs.createTypeMappingsFile(wfName + "-typemappings.json", servicePath, functionUrls);
         }
 
         // fc generation (including all files required for execution)
-        fcs.createApolloInputFile(this.appConfig.getInputFile(), "apollo-input.json");
-        fcs.generateFunctionChoreography("someTestName", servicePath, this.transformation);
+        fcs.createApolloInputFile(this.appConfig.getInputFilePath(), wfName + "-input.json");
+        fcs.generateFunctionChoreography(wfName, servicePath, this.transformation);
     }
 
 }

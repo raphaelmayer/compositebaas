@@ -6,7 +6,7 @@
   </module>
   <module class="at.uibk.dps.ee.enactables.modules.CoreFunctionsModule"/>
   <module class="at.uibk.dps.ee.io.modules.InputReaderFileModule">
-    <property name="filePath">C:\Users\rapha\Uni\Bachelorarbeit\compositebaas\apollo-input.json</property>
+    <property name="filePath">C:\Users\rapha\Uni\Bachelorarbeit\compositebaas\someTestName-input.json</property>
   </module>
   <module class="at.uibk.dps.ee.io.modules.LoggingModule">
     <property name="pathToConfigFile">./logging/config/logback.xml</property>
@@ -14,7 +14,7 @@
   <module class="at.uibk.dps.ee.io.modules.OutputPrinterModule"/>
   <module class="at.uibk.dps.ee.io.modules.SpecificationInputModule">
     <property name="filePathAfcl">C:\Users\rapha\Uni\Bachelorarbeit\compositebaas\someTestName.yaml</property>
-    <property name="filePathMappingFile">C:\Users\rapha\Uni\Bachelorarbeit\compositebaas\type_mappings.json</property>
+    <property name="filePathMappingFile">C:\Users\rapha\Uni\Bachelorarbeit\compositebaas\someTestName-typemappings.json</property>
   </module>
   <module class="at.uibk.dps.ee.visualization.modules.EnactmentViewerModule">
     <property name="closeOnTerminate">false</property>

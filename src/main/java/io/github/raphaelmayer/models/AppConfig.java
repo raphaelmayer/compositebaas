@@ -1,18 +1,35 @@
 package io.github.raphaelmayer.models;
 
+import org.apache.commons.cli.CommandLine;
+
 public class AppConfig {
 
-    private String inputFile;
+    private String inputFilePath;
+    private String workflowName;
     private boolean deploy;
     private boolean debug;
 
-    // Getters and setters for each field
-    public String getInputFile() {
-        return inputFile;
+    public AppConfig(CommandLine cmd) {
+        this.setInputFilePath(cmd.getOptionValue("f"));
+        this.setWorkflowName(cmd.getOptionValue("n"));
+        this.setDeploy(cmd.hasOption("deploy"));
+        this.setDebug(cmd.hasOption("debug"));
     }
 
-    public void setInputFile(String inputFile) {
-        this.inputFile = inputFile;
+    public String getInputFilePath() {
+        return inputFilePath;
+    }
+
+    public void setInputFilePath(String inputFilePath) {
+        this.inputFilePath = inputFilePath;
+    }
+
+    public String getWorkflowName() {
+        return workflowName;
+    }
+
+    public void setWorkflowName(String workflowName) {
+        this.workflowName = workflowName;
     }
 
     public boolean isDeploy() {
