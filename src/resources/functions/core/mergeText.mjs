@@ -31,32 +31,48 @@ async function saveInS3(data, bucket, key) {
     console.log(`Saved file "${key}" in bucket "${bucket}"`);
 }
 
-// Merge multiple text files from S3
+// Merge multiple text files from S3 where fileNames is an array of arrays
 export const handler = async (event) => {
-    const inputBucket = event.inputBucket;
-    const outputBucket = event.outputBucket || inputBucket;
-    const fileNames = event.fileNames; // Array of file names to be merged
-    const outputFileName = `${fileNames[0].split("-")[0]}-merged.txt`;
-    let mergedText = "";
+    const body = event.body ? JSON.parse(event.body) : event; // Payload structure depends on API Gateway or direct trigger
+    const fileGroups = Array.isArray(body.fileNames) ? body.fileNames : [body.fileNames]; // Each group is an array of file parts
+    const inputBucket = body.inputBucket;
+    const outputBucket = body.outputBucket || inputBucket;
+    const mergedFiles = [];
 
     try {
-        // Load and merge each file's content
-        for (const fileName of fileNames) {
-            const fileContent = await loadFromS3(inputBucket, fileName);
-            console.log(`Loaded file from S3: ${fileName}`);
-            mergedText += fileContent + "\n"; // Add a newline between files
+        // Process each group of file parts
+        for (const fileParts of fileGroups) {
+            if (!Array.isArray(fileParts)) {
+                throw new Error("fileNames should be an array of arrays.");
+            }
+
+            const outputFileName = `${fileParts[0].split("-")[0]}-merged.txt`;
+            let mergedText = "";
+
+            // Load and merge each part of the file
+            for (const fileName of fileParts) {
+                const fileContent = await loadFromS3(inputBucket, fileName);
+                console.log(`Loaded file part from S3: ${fileName}`);
+                mergedText += fileContent + "\n"; // Add a newline between parts
+            }
+
+            // Save the merged file to S3
+            await saveInS3(mergedText, outputBucket, outputFileName);
+            console.log(`Merged file saved to S3: ${outputFileName}`);
+            mergedFiles.push(outputFileName);
         }
 
-        // Save the merged text to S3
-        await saveInS3(mergedText, outputBucket, outputFileName);
-        console.log(`Merged file saved to S3: ${outputFileName}`);
-
         return {
-            fileNames: [outputFileName],
+            statusCode: 200,
+            body: JSON.stringify({
+                fileNames: mergedFiles,
+            }),
         };
-        
     } catch (error) {
         console.error("Error during merge process:", error);
-        return { error: error.message };
+        return {
+            statusCode: error.statusCode || 500,
+            body: error.message,
+        };
     }
 };

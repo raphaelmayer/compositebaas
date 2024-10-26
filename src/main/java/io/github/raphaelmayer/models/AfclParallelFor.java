@@ -28,4 +28,12 @@ public class AfclParallelFor extends AfclBaseFunction {
         this.iterators = iterators;
         this.loopBody = loopBody;
     }
+
+    public AfclParallelFor(String name, String dataInName, String dataInSource) {
+        super(name, "ParallelFor");
+        this.iterators = List.of(dataInName);
+        this.loopBody = new ArrayList<>();
+        this.dataIns = new ArrayList<>();
+        this.dataIns.add(new AfclDataInOut(dataInName, "collection", dataInSource));
+    }
 }

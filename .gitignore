@@ -4,6 +4,12 @@ src/resources/functions/*.zip
 src/resources/functions/*/*.zip
 target
 
+#  files generated while testing
 apollo-input.json
 someTestName.yaml
 type_mappings.json
+config.xml
+
+SomeWorkflowName-input.json
+SomeWorkflowName.yaml
+SomeWorkflowName-typemappings.json

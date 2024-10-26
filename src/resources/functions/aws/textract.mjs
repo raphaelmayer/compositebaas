@@ -27,7 +27,7 @@ async function uploadToS3(bucket, key, body, contentType) {
 export const handler = async (event) => {
     try {
         const body = event.body ? JSON.parse(event.body) : event; // payload is different when triggering over APIGateway
-        const fileNames = body.fileNames;
+        const fileNames = Array.isArray(body.fileNames) ? body.fileNames : [body.fileNames];
         const inputBucket = body.inputBucket;
         const outputBucket = body.outputBucket || inputBucket;
         const outputKeys = [];

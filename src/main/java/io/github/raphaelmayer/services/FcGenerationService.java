@@ -36,6 +36,8 @@ public class FcGenerationService {
     public FunctionChoreography generateFunctionChoreography(String fcName, List<ServiceFunction> servicePath,
             Transformation transformation) {
         FunctionChoreography fc = new FunctionChoreography(fcName);
+        AfclParallelFor firstLoop = new AfclParallelFor("FirstLoop", "fileNames", "analyse/fileNames");
+        AfclParallelFor nestedLoop = null;
 
         // add dynamic input data to FC dataIns
         addDynamicDataFromInputFile(fc, transformation);
@@ -43,6 +45,13 @@ public class FcGenerationService {
         // Generate workflow body and connect functions
         for (ServiceFunction function : servicePath) {
             AfclBaseFunction afclFunction = new AfclBaseFunction(function.name, function.type);
+
+            if (afclFunction.type.equals("Merge")) {
+                String source = findDataSource("fileNames");
+                nestedLoop.dataOuts.add(new AfclDataInOut("fileNamesColl", "collection", source));
+                availableData.put("fileNames",
+                        new AfclDataInOut("fileNames", "collection", nestedLoop.name + "/" + "fileNamesColl"));
+            }
 
             // Handle dataIns: Check if it's from fc.dataIns or a previous function's
             // dataOut
@@ -65,8 +74,30 @@ public class FcGenerationService {
                         new AfclDataInOut(dout.name, dout.type, afclFunction.name + "/" + dout.name));
             }
 
-            fc.workflowBody.add(afclFunction);
+            if (afclFunction.name.equals("analyse")) {
+                fc.workflowBody.add(afclFunction);
+                AfclDataInOut din = firstLoop.dataIns.get(0);
+                availableData.put(din.name, new AfclDataInOut(din.name, din.type, firstLoop.name + "/" + din.name));
+            } else if (afclFunction.type.equals("Split")) {
+                firstLoop.loopBody.add(afclFunction);
+                nestedLoop = new AfclParallelFor("NestedLoop", "fileNames", afclFunction.name + "/" + "fileNames");
+                firstLoop.loopBody.add(nestedLoop);
+                AfclDataInOut din = nestedLoop.dataIns.get(0);
+                availableData.put(din.name, new AfclDataInOut(din.name, din.type, nestedLoop.name + "/" + din.name));
+            } else if (afclFunction.type.equals("Merge")) {
+                firstLoop.loopBody.add(afclFunction);
+            } else {
+                if (nestedLoop != null)
+                    nestedLoop.loopBody.add(afclFunction);
+                else
+                    firstLoop.loopBody.add(afclFunction);
+            }
         }
+        String source = findDataSource("fileNames");
+        firstLoop.dataOuts.add(new AfclDataInOut("fileNamesColl", "collection", source));
+        availableData.put("fileNamesColl",
+                new AfclDataInOut("fileNames", "collection", firstLoop.name + "/" + "fileNamesColl"));
+        fc.workflowBody.add(firstLoop);
 
         // if a fc.dataIn is not used, apollo throws an IllegalStateException, because a
         // node is "disconnected". This should not matter, but I currently put all input
@@ -75,20 +106,17 @@ public class FcGenerationService {
         // The workaround is, that the analyse function receives all input parameters.
         // Note: This results in duplicated analyse.dataIns in the yaml file.
         for (AfclDataInOut dio : fc.dataIns) {
-            fc.workflowBody.get(0).dataIns.add(new AfclDataInOut(dio.name, dio.type, fc.name + '/' + dio.name));
+            if (!fc.workflowBody.get(0).dataIns.contains(dio)) {
+                fc.workflowBody.get(0).dataIns.add(new AfclDataInOut(dio.name, dio.type, fc.name + '/' + dio.name));
+            }
         }
-
-        AfclParallelFor pFor = new AfclParallelFor("TestLoop");
-        pFor.iterators.add("SomeIterator");
-        pFor.loopBody.add(new AfclBaseFunction("InLoop", "TEST"));
-        // fc.workflowBody.add(pFor);
 
         // populate fc.dataOuts
         // we check the name of the DataOuts of the first function (analyse) to infer
         // the name here
-        String dataFieldName = fc.workflowBody.get(0).dataOuts.get(0).name;
+        String dataFieldName = "fileNamesColl"; // fc.workflowBody.get(0).dataOuts.get(0).name;
         String dataFieldType = fc.workflowBody.get(0).dataOuts.get(0).type;
-        fc.dataOuts.add(new AfclDataInOut(dataFieldName, dataFieldType, availableData.get(dataFieldName).source));
+        fc.dataOuts.add(new AfclDataInOut(dataFieldName, dataFieldType, findDataSource(dataFieldName)));
 
         saveFunctionChoreography(fc);
         return fc;

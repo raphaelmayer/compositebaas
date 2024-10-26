@@ -43,11 +43,11 @@ function parseFileName(fileName) {
 export const handler = async (event) => {
     try {
         const body = event.body ? JSON.parse(event.body) : event; // payload is different when triggering over APIGateway
+        const fileNames = Array.isArray(body.fileNames) ? body.fileNames : [body.fileNames];
         const inputBucket = body.inputBucket;
         const outputBucket = body.outputBucket || inputBucket;
         const inputLanguage = body.inputLanguage || "auto";
-        const outputLanguage = body.outputLanguage || "en-US";
-        const fileNames = body.fileNames;
+        const outputLanguage = body.outputLanguage || "en";
         const outputKeys = [];
 
         for (const fileName of fileNames) {

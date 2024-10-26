@@ -1,25 +1,27 @@
 package io.github.raphaelmayer.providers.aws;
 
-import software.amazon.awssdk.services.apigateway.ApiGatewayClient;
-import software.amazon.awssdk.services.lambda.LambdaClient;
-import software.amazon.awssdk.services.sts.StsClient;
-import software.amazon.awssdk.services.iam.IamClient;
-import software.amazon.awssdk.regions.Region;
-
 import java.io.File;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
-import io.github.raphaelmayer.util.Constants;
-import io.github.raphaelmayer.util.Utils;
+import javax.management.RuntimeErrorException;
+
 import io.github.raphaelmayer.models.ProviderManager;
 import io.github.raphaelmayer.models.ServiceFunction;
+import io.github.raphaelmayer.util.Constants;
+import io.github.raphaelmayer.util.Utils;
 import software.amazon.awssdk.auth.credentials.ProfileCredentialsProvider;
+import software.amazon.awssdk.regions.Region;
+import software.amazon.awssdk.services.apigateway.ApiGatewayClient;
+import software.amazon.awssdk.services.iam.IamClient;
+import software.amazon.awssdk.services.lambda.LambdaClient;
+import software.amazon.awssdk.services.sts.StsClient;
 
 public class AwsManager implements ProviderManager {
 
-    private final Region REGION = Region.US_EAST_1; // TODO: set region dynamically. lambdas also need region
-                                                    // dynamically
+    private final Region region;
     private final List<String> lambdaPolicies = List.of(
             "arn:aws:iam::aws:policy/AmazonS3FullAccess",
             "arn:aws:iam::aws:policy/AmazonTranscribeFullAccess",
@@ -30,8 +32,13 @@ public class AwsManager implements ProviderManager {
     private final LambdaService lambda;
     private final ApiGatewayService apiGateway;
 
-    public AwsManager() {
+    public AwsManager(String region) {
         ProfileCredentialsProvider credentialsProvider = ProfileCredentialsProvider.create("default");
+        try{
+            this.region = Region.of(region);
+        }catch(NullPointerException e) {
+            throw new RuntimeException("Error: No input.region specified in the input file.");
+        }
 
         StsClient stsClient = StsClient.builder()
                 .region(Region.AWS_GLOBAL)
@@ -42,18 +49,18 @@ public class AwsManager implements ProviderManager {
                 .build();
         LambdaClient lambdaClient = LambdaClient.builder()
                 .credentialsProvider(credentialsProvider)
-                .region(this.REGION)
+                .region(this.region)
                 .build();
         ApiGatewayClient apiGatewayClient = ApiGatewayClient.builder()
                 .credentialsProvider(credentialsProvider)
-                .region(this.REGION)
+                .region(this.region)
                 .build();
 
         this.sts = new StsService(stsClient);
         String accountId = this.sts.getAccountId();
         this.iam = new IamService(iamClient, lambdaPolicies);
-        this.lambda = new LambdaService(lambdaClient, this.REGION.toString(), accountId);
-        this.apiGateway = new ApiGatewayService(apiGatewayClient, this.REGION.toString());
+        this.lambda = new LambdaService(lambdaClient, this.region.toString(), accountId);
+        this.apiGateway = new ApiGatewayService(apiGatewayClient, this.region.toString());
     }
 
     @Override
@@ -69,14 +76,12 @@ public class AwsManager implements ProviderManager {
             String apiId = apiGateway.createApiGateway(Constants.API_GATEWAY_NAME);
             System.out.println("API Gateway created with ID: " + apiId);
 
-            // Create the Lambda layer
-            String layerArn = lambda.createLayer(Constants.FFMPEG_LAYER_NAME,
-                    Constants.FFMPEG_LAYER_ZIP_PATH, Constants.LAMBDA_RUNTIME);
-            System.out.println("Created Lambda Layer ARN: " + layerArn);
+            // Create the Lambda layers
+            Map<String, String> layerArnMap = createRequiredLayers(servicePath);
 
             // For each service path, upload Lambda and create API integration
             for (ServiceFunction function : servicePath) {
-                String functionUrl = deployLambda(function, roleArn, apiId);
+                String functionUrl = deployLambda(function, roleArn, apiId, layerArnMap);
                 functionUrls.add(functionUrl);
             }
 
@@ -153,18 +158,49 @@ public class AwsManager implements ProviderManager {
         return sts;
     }
 
+    private Map<String, String> createRequiredLayers(List<ServiceFunction> servicePath) {
+        Map<String, String> layerArnMap = new HashMap<>();
+        List<String> dependencies = new ArrayList<>();
+
+        for (ServiceFunction function : servicePath) {
+            for (String dependency : function.dependencies) {
+                if (!dependencies.contains(dependency)) {
+                    dependencies.add(dependency);
+                }
+            }
+        }
+
+        for (String dependency : dependencies) {
+            String layerName = Constants.LAMBDA_FUNCTION_PREFIX + dependency;
+            String zipPath = Constants.LAYER_DIRECTORY + dependency + ".zip";
+
+            String layerArn = lambda.createLayer(layerName, zipPath, Constants.LAMBDA_RUNTIME);
+            layerArnMap.put(dependency, layerArn);
+            System.out.println("Created Layer " + layerName + ": " + layerArn);
+        }
+
+        return layerArnMap;
+    }
+
     /**
-     * Zip and upload a lambda function and expose it via an API Gateway. 
+     * Zip and upload a lambda function and expose it via an API Gateway.
+     * 
      * @param functionName
      * @param roleArn
      * @param apiId
      * @return
      */
-    private String deployLambda(ServiceFunction function, String roleArn, String apiId) {
-        String functionPath = Constants.FUNCTION_DIRECTORY + File.separator + function.provider + File.separator + function.name;
+    private String deployLambda(ServiceFunction function, String roleArn, String apiId, Map<String, String> layerArnMap) {
+        String functionPath = Constants.FUNCTION_DIRECTORY + File.separator + function.provider + File.separator
+                + function.name;
         String zipPath = Utils.zipFile(functionPath + ".mjs", functionPath + ".zip");
 
-        String functionArn = lambda.uploadLambda(function, zipPath, roleArn);
+        List<String> layerArns = new ArrayList<>();
+        for (String dependency : function.dependencies) {
+            layerArns.add(layerArnMap.get(dependency));
+        }
+
+        String functionArn = lambda.uploadLambda(function, zipPath, roleArn, layerArns);
         String functionUrl = exposeLambdaThroughApi(apiId, functionArn, function.name, "POST");
         System.out.println("Deployed function " + function.name + ": " + functionUrl);
 
@@ -196,7 +232,7 @@ public class AwsManager implements ProviderManager {
         lambda.addLambdaInvokePermission(lambdaArn, apiId, resourcePath, httpMethod);
 
         // Construct and return the full API Gateway URL for the Lambda function
-        String apiUrl = "https://" + apiId + ".execute-api." + REGION + ".amazonaws.com/"
+        String apiUrl = "https://" + apiId + ".execute-api." + this.region + ".amazonaws.com/"
                 + Constants.API_GATEWAY_STAGE_NAME + "/" + resourcePath;
         System.out.println("Exposed Lambda URL: " + apiUrl);
 

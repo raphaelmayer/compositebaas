@@ -73,9 +73,9 @@ async function pollTranscriptionJob(transcribe, jobId) {
 export const handler = async (event) => {
     try {
         const body = event.body ? JSON.parse(event.body) : event; // payload is different when triggering over APIGateway
-        const fileNames = body.fileNames;
+        const fileNames = Array.isArray(body.fileNames) ? body.fileNames : [body.fileNames];
         const inputBucket = body.inputBucket;
-        const inputLanguage = "en-US"; // should read from body.inputLanguage, but XX language codes need to be adjusted.
+        const inputLanguage = convertLanguageCode(body.inputLanguage) || "en-US";
         const outputKeys = [];
 
         for (const fileName of fileNames) {
@@ -130,3 +130,99 @@ export const handler = async (event) => {
         };
     }
 };
+
+function convertLanguageCode(code) {
+    const languageMap = {
+        "ab": "ab-GE",
+        "af": "af-ZA",
+        "ar": "ar-SA", // default to Modern Standard Arabic
+        "hy": "hy-AM",
+        "ast": "ast-ES",
+        "az": "az-AZ",
+        "ba": "ba-RU",
+        "eu": "eu-ES",
+        "be": "be-BY",
+        "bn": "bn-IN",
+        "bs": "bs-BA",
+        "bg": "bg-BG",
+        "ca": "ca-ES",
+        "ckb": "ckb-IQ", // default to Iraq
+        "zh": "zh-CN", // default to Simplified Chinese
+        "hr": "hr-HR",
+        "cs": "cs-CZ",
+        "da": "da-DK",
+        "nl": "nl-NL",
+        "en": "en-US", // default to US English
+        "et": "et-ET",
+        "fa": "fa-IR",
+        "fi": "fi-FI",
+        "fr": "fr-FR",
+        "gl": "gl-ES",
+        "ka": "ka-GE",
+        "de": "de-DE",
+        "el": "el-GR",
+        "gu": "gu-IN",
+        "ha": "ha-NG",
+        "he": "he-IL",
+        "hi": "hi-IN",
+        "hu": "hu-HU",
+        "is": "is-IS",
+        "id": "id-ID",
+        "it": "it-IT",
+        "ja": "ja-JP",
+        "kab": "kab-DZ",
+        "kn": "kn-IN",
+        "kk": "kk-KZ",
+        "rw": "rw-RW",
+        "ko": "ko-KR",
+        "ky": "ky-KG",
+        "lv": "lv-LV",
+        "lt": "lt-LT",
+        "lg": "lg-IN",
+        "mk": "mk-MK",
+        "ms": "ms-MY",
+        "ml": "ml-IN",
+        "mt": "mt-MT",
+        "mr": "mr-IN",
+        "mhr": "mhr-RU",
+        "mn": "mn-MN",
+        "nb": "nb-NO", // Norwegian Bokmål
+        "or": "or-IN",
+        "ps": "ps-AF",
+        "pl": "pl-PL",
+        "pt": "pt-PT", // default to Portugal Portuguese
+        "pa": "pa-IN",
+        "ro": "ro-RO",
+        "ru": "ru-RU",
+        "sr": "sr-RS",
+        "si": "si-LK",
+        "sk": "sk-SK",
+        "sl": "sl-SI",
+        "so": "so-SO",
+        "es": "es-ES",
+        "su": "su-ID",
+        "sw": "sw-KE", // default to Kenya Swahili
+        "sv": "sv-SE",
+        "tl": "tl-PH",
+        "ta": "ta-IN",
+        "tt": "tt-RU",
+        "te": "te-IN",
+        "th": "th-TH",
+        "tr": "tr-TR",
+        "uk": "uk-UA",
+        "ug": "ug-CN",
+        "uz": "uz-UZ",
+        "vi": "vi-VN",
+        "cy": "cy-WL",
+        "wo": "wo-SN",
+        "zu": "zu-ZA"
+    };
+
+    // Check if the code is already in the full xx-XX format
+    if (code.match(/^[a-z]{2,3}(-[A-Z]{2,3})?$/)) {
+        return code;
+    }
+
+    // Otherwise, return the mapped code or undefined
+    return languageMap[code] || undefined;
+}
