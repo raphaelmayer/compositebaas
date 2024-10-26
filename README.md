@@ -37,7 +37,7 @@ If you also want to execute these workflows with Apollo, please refer to the off
 ### General Usage
 
 ```
-java -jar compositebaas.jar -f <input.json> -n <workflowName> [--deploy] [--debug] | Generate workflow using the specified input file
+java -jar compositebaas.jar -f <path/to/input.json> -n <workflowName> [--deploy] [--debug] | Generate workflow using the specified input file
 java -jar compositebaas.jar --zip | Rezip all functions in the functions directory
 java -jar compositebaas.jar --reset <region> | Reset the specified cloud region
 java -jar compositebaas.jar -h | --help | Display the help message
@@ -149,7 +149,7 @@ To extend CompositeBaaS by adding a custom function, follow these steps:
 
     These fields are used during execution by Apollo to pass data. For more information on this, refer to the Apollo documentation [here](https://apollowf.github.io/learn.html).
 
-    *Note that attributes will be prefixed by their parent object from the input file. This means that a language attribute will be passed to functions as inputLanguage or outputLanguage depending on where in the input file it was specified. DataIns/DataOuts need to be named accordingly.*
+    *Note that attributes will be prefixed by their parent key from the input file. This means that a language attribute will be passed to functions as inputLanguage or outputLanguage depending on where in the input file it was specified. DataIns/DataOuts need to be named accordingly.*
 
 2. **Implement the function as a serverless function:**
    Write the code for the serverless function and place it in the appropriate directory:  
@@ -198,8 +198,9 @@ To extend CompositeBaaS by adding a custom function, follow these steps:
 
 If you want to see this in more detail, check out the resources directory, where you can find the `function_ontology.json` and the `functions` directory.
 
-_Note: It is possible to implement functions in various different programming languages however layers currently expect "nodejs20x" as a runtime to work properly and they need to be manually packaged. For JS functions this happens automatically._
-
+_Note: It is possible to implement functions in various different programming languages however layers currently expect "nodejs20x" as a runtime to work properly. Functions in other languages need to be packaged manually. For JS functions this happens automatically._
+Please refer to the official documentation on how to prepare and package functions for uploading with the SDK.
+ 
 ### Adding a layer
 
 CompositeBaaS provides the following layers by default:
