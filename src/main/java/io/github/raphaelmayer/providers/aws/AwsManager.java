@@ -6,6 +6,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.management.RuntimeErrorException;
+
 import io.github.raphaelmayer.models.ProviderManager;
 import io.github.raphaelmayer.models.ServiceFunction;
 import io.github.raphaelmayer.util.Constants;
@@ -19,8 +21,7 @@ import software.amazon.awssdk.services.sts.StsClient;
 
 public class AwsManager implements ProviderManager {
 
-    private final Region REGION = Region.US_EAST_1; // TODO: set region dynamically. lambdas also need region
-                                                    // dynamically
+    private final Region region;
     private final List<String> lambdaPolicies = List.of(
             "arn:aws:iam::aws:policy/AmazonS3FullAccess",
             "arn:aws:iam::aws:policy/AmazonTranscribeFullAccess",
@@ -31,8 +32,13 @@ public class AwsManager implements ProviderManager {
     private final LambdaService lambda;
     private final ApiGatewayService apiGateway;
 
-    public AwsManager() {
+    public AwsManager(String region) {
         ProfileCredentialsProvider credentialsProvider = ProfileCredentialsProvider.create("default");
+        try{
+            this.region = Region.of(region);
+        }catch(NullPointerException e) {
+            throw new RuntimeException("Error: No input.region specified in the input file.");
+        }
 
         StsClient stsClient = StsClient.builder()
                 .region(Region.AWS_GLOBAL)
@@ -43,18 +49,18 @@ public class AwsManager implements ProviderManager {
                 .build();
         LambdaClient lambdaClient = LambdaClient.builder()
                 .credentialsProvider(credentialsProvider)
-                .region(this.REGION)
+                .region(this.region)
                 .build();
         ApiGatewayClient apiGatewayClient = ApiGatewayClient.builder()
                 .credentialsProvider(credentialsProvider)
-                .region(this.REGION)
+                .region(this.region)
                 .build();
 
         this.sts = new StsService(stsClient);
         String accountId = this.sts.getAccountId();
         this.iam = new IamService(iamClient, lambdaPolicies);
-        this.lambda = new LambdaService(lambdaClient, this.REGION.toString(), accountId);
-        this.apiGateway = new ApiGatewayService(apiGatewayClient, this.REGION.toString());
+        this.lambda = new LambdaService(lambdaClient, this.region.toString(), accountId);
+        this.apiGateway = new ApiGatewayService(apiGatewayClient, this.region.toString());
     }
 
     @Override
@@ -226,7 +232,7 @@ public class AwsManager implements ProviderManager {
         lambda.addLambdaInvokePermission(lambdaArn, apiId, resourcePath, httpMethod);
 
         // Construct and return the full API Gateway URL for the Lambda function
-        String apiUrl = "https://" + apiId + ".execute-api." + REGION + ".amazonaws.com/"
+        String apiUrl = "https://" + apiId + ".execute-api." + this.region + ".amazonaws.com/"
                 + Constants.API_GATEWAY_STAGE_NAME + "/" + resourcePath;
         System.out.println("Exposed Lambda URL: " + apiUrl);
 

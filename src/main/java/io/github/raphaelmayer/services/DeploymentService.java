@@ -14,9 +14,9 @@ public class DeploymentService {
     private final AwsManager awsManager;
     private final Ontology ontology;
 
-    public DeploymentService(Ontology ontology) {
+    public DeploymentService(Ontology ontology, String region) {
         this.ontology = ontology;
-        this.awsManager = new AwsManager();
+        this.awsManager = new AwsManager(region);
     }
 
     public List<String> setupAndDeploy(List<ServiceFunction> servicePath) {

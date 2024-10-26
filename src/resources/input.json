@@ -1,5 +1,6 @@
 {
     "input": {
+        "region": "us-east-1",
         "bucket": "testbucket1234xc",
         "fileNames":["testvideo2.mp4"],
         "language": "en",

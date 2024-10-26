@@ -25,10 +25,12 @@ public class CompositeBaaSOrchestrator {
         System.out.println("Available functions:");
         this.ontology.functions.forEach(f -> System.out.println(f.name));
         this.transformation = JsonUtils.parseFile(appConfig.getInputFilePath(), Transformation.class);
+        String region = (String) transformation.input.get("region");
         System.out.println(this.transformation.toString());
 
         this.pfs = new PathfindingService(this.ontology);
-        this.ds = new DeploymentService(this.ontology);
+        // no need for a region, if user does not deploy
+        this.ds = new DeploymentService(this.ontology, appConfig.isDeploy() ? region : "nodeploy"); 
         this.fcs = new FcGenerationService(this.ontology);
     }
 

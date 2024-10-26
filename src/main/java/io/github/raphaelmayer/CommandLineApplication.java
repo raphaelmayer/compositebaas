@@ -47,7 +47,7 @@ public class CommandLineApplication {
         AppConfig appConfig = new AppConfig(cmd);
 
         if (cmd.hasOption("reset")) {
-            resetEnvironment();
+            resetEnvironment(cmd.getOptionValue("reset"));
         } else if (cmd.hasOption("zip")) {
             zipFunctions();
         } else if (cmd.hasOption("f") && cmd.hasOption("n")) {
@@ -58,9 +58,9 @@ public class CommandLineApplication {
         }
     }
 
-    private void resetEnvironment() {
+    private void resetEnvironment(String region) {
         System.out.println("Resetting environment...");
-        new DeploymentService(null).resetEnvironment();
+        new DeploymentService(null, region).resetEnvironment();
     }
 
     private void zipFunctions() {
@@ -76,7 +76,7 @@ public class CommandLineApplication {
                 .addOption("h", "help", false, "Display usage information and available commands.")
                 .addOption("f", "file", true, "Specify the path to the input file required for workflow generation.")
                 .addOption("n", "name", true, "Specify the name of the workflow.")
-                .addOption("reset", false, "Reset the cloud environment without running the workflow generation.")
+                .addOption("reset", true, "Reset the cloud environment without running the workflow generation.")
                 .addOption("zip", false, "Zip all JavaScript (.js) files in the functions directory.")
                 .addOption("deploy", false, "Run the workflow generation and deploy all required resources.")
                 .addOption("debug", false, "Run the workflow generation in debug mode with additional logging.");
@@ -88,28 +88,28 @@ public class CommandLineApplication {
                 "Available Actions:\n" +
                 "  -f, --file <arg>   Specify input file to generate a service path and workflow (Required).\n" +
                 "  -n, --name <arg>   Specify the name of the workflow (Required).\n" +
-                "  --zip              Zip all functions located in the functions directory.\n" +
-                "  --reset            Reset the cloud environment to the initial state.\n" +
+                "  -zip               Zip all functions located in the functions directory.\n" +
+                "  -reset <arg>       Reset the region specified in arg to the initial state.\n" +
                 "  -h, --help         Display this help message.\n\n" +
                 "Flags (for use with -f):\n" +
-                "  --deploy           Run with deploying all required resources.\n" +
-                "  --debug            Enable debug mode for detailed output.\n";
+                "  -deploy           Run with deploying all required resources.\n" +
+                "  -debug            Enable debug mode for detailed output.\n";
 
         String usage = "Usage:\n" +
                 "  java -jar compositebaas.jar -f <input.json> -n <workflowName> [--deploy] [--debug]\n" +
                 "  java -jar compositebaas.jar --zip\n" +
-                "  java -jar compositebaas.jar --reset\n" +
+                "  java -jar compositebaas.jar --reset <region>\n" +
                 "  java -jar compositebaas.jar -h | --help";
 
         String footer = "\nExamples:\n" +
                 "  java -jar compositebaas.jar -f input.json -n workflowName\n" +
                 "      Generate workflow without deploying resources.\n" +
-                "  java -jar compositebaas.jar -f input.json -n workflowName --deploy --debug\n" +
+                "  java -jar compositebaas.jar -f input.json -n workflowName -deploy -debug\n" +
                 "      Generate workflow in debug mode including deployment.\n" +
-                "  java -jar compositebaas.jar --zip\n" +
+                "  java -jar compositebaas.jar -zip\n" +
                 "      Zip all functions in the functions directory.\n" +
-                "  java -jar compositebaas.jar --reset\n" +
-                "      Reset the cloud environment.\n";
+                "  java -jar compositebaas.jar -reset 'us-east-1' \n" +
+                "      Reset the region specified.\n";
 
         System.out.println(header + "\n" + usage + "\n" + footer);
     }

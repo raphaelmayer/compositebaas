@@ -47,7 +47,7 @@ export const handler = async (event) => {
         const inputBucket = body.inputBucket;
         const outputBucket = body.outputBucket || inputBucket;
         const inputLanguage = body.inputLanguage || "auto";
-        const outputLanguage = body.outputLanguage || "en-US";
+        const outputLanguage = body.outputLanguage || "en";
         const outputKeys = [];
 
         for (const fileName of fileNames) {

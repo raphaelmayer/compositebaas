@@ -1,8 +1,0 @@
-{
-  "inputBucket" : "testbucket1234xc",
-  "inputFileNames" : [ "testvideo2.mp4" ],
-  "inputLanguage" : "en",
-  "inputType" : "video",
-  "outputLanguage" : "de",
-  "outputType" : "text"
-}

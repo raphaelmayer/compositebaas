@@ -11,10 +11,10 @@ TODO
 ### General Usage
 
 ```
-CompositeBaaS -f <path/to/inputfile> [--deploy] [--debug]     Generate workflow using the specified input file
-CompositeBaaS --zip                                             Rezip all functions in the functions directory
-CompositeBaaS --reset                                           Reset the cloud environment
-CompositeBaaS -h | --help
+java -jar compositebaas.jar -f <input.json> -n <workflowName> [--deploy] [--debug] | Generate workflow using the specified input file
+java -jar compositebaas.jar --zip | Rezip all functions in the functions directory
+java -jar compositebaas.jar --reset | Reset the cloud environment
+java -jar compositebaas.jar -h | --help | Display the help message
 
 Optional flags:
 --deploy      Generate workflow and additionally set up the cloud environment and deploy all required functions.
@@ -96,25 +96,25 @@ To extend CompositeBaaS by adding a custom function, follow these steps:
     }
     ```
 
-    This JSON structure defines key properties like the function’s name, type, provider, and configuration, which CompositeBaaS uses to integrate the function into workflows. Attributes in the input object specify requirements for the particular service function, while outputs denote the particular transformation the service provides.
+    This JSON structure defines key properties like the function’s name, type, provider, and configuration, which CompositeBaaS uses to integrate the function into workflows. Attributes in the input object specify **requirements** for the particular service function, while outputs denote the particular transformation the service provides.
 
     To specify input and output arguments of your serverless function, use the dedicated dataIn and dataOut fields. (TODO)
     
-    ```DataIn
-    
-                {
-                    "name": "attributeName",
-                    "type": "attributeType",
-                    "required": boolean
-                }
+    ```
+    DataIn
+    {
+        "name": "attributeName",
+        "type": "attributeType",
+        "required": boolean
+    }
     ```
     
-    ```DataOut
-    
-                {
-                    "name": "attributeName",
-                    "type": "attributeType"
-                }
+    ```
+    DataOut
+    {
+        "name": "attributeName",
+        "type": "attributeType"
+    }
     ```
 
     CompositeBaaS will look for these attribute names when looking for services to apply for the specified intent/transformation. 
@@ -188,6 +188,7 @@ To add a custom layer ...
 -   **Split/Merge**
     -   mergeText currently receives an array of arrays due to how CompositeBaaS generates workflows. Each function works with multiple
     -   input files, this means the loop collects those collections and returns them as a collection of collections.
+    -   merge does not work. probably due to how the data is sent. 
 -   **Parallelize wf**
     -   we did parallelize, although hardcoded and not really pretty ✓
 -   **handle lambda limitations** appropriately (file sizes, durations)

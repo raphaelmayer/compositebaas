@@ -40,7 +40,7 @@ export const handler = async (event) => {
         const inputBucket = body.inputBucket;
         const outputBucket = body.outputBucket || inputBucket;
         const voiceId = body.voiceId || "Joanna";
-        const inputLanguage = body.inputLanguage || "en-US";
+        const inputLanguage = convertLanguageCode(body.inputLanguage) || "en-US";
         const format = body.format || "mp3"; // output format
         const outputKeys = [];
 
@@ -82,3 +82,42 @@ export const handler = async (event) => {
         };
     }
 };
+
+function convertLanguageCode(code) {
+    const languageMap = {
+        "arb": "arb", // Arabic
+        "ar": "ar-AE", // Arabic (Gulf)
+        "ca": "ca-ES", // Catalan
+        "yue": "yue-CN", // Chinese (Cantonese)
+        "cmn": "cmn-CN", // Chinese (Mandarin)
+        "cs": "cs-CZ", // Czech
+        "da": "da-DK", // Danish
+        "nl": "nl-NL", // Dutch (Netherlands)
+        "en": "en-US", // English (US)
+        "fi": "fi-FI", // Finnish
+        "fr": "fr-FR", // French
+        "hi": "hi-IN", // Hindi
+        "de": "de-DE", // German
+        "is": "is-IS", // Icelandic
+        "it": "it-IT", // Italian
+        "ja": "ja-JP", // Japanese
+        "ko": "ko-KR", // Korean
+        "nb": "nb-NO", // Norwegian
+        "pl": "pl-PL", // Polish
+        "pt": "pt-PT", // Portuguese (European)
+        "ro": "ro-RO", // Romanian
+        "ru": "ru-RU", // Russian
+        "es": "es-ES", // Spanish (European)
+        "sv": "sv-SE", // Swedish
+        "tr": "tr-TR", // Turkish
+        "cy": "cy-GB" // Welsh
+    };
+
+    // Check if the code is already in the full xx-XX format
+    if (code.match(/^[a-z]{2,3}(-[A-Z]{2,3})?$/)) {
+        return code;
+    }
+
+    // Otherwise, return the mapped code or undefined
+    return languageMap[code] || undefined;
+}
