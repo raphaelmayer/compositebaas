@@ -58,7 +58,7 @@ CompositeBaaS requires an input file (in JSON) to define the data transformation
 }
 ```
 
-In the `input` and `output` sections, users can specify various parameters to describe the source and target data. Based on these parameters, CompositeBaaS will automatically identify and assemble a chain of services to generate a workflow that performs the required transformation.
+In the `input` and `output` sections, users can specify various parameters to describe the source and target data. Based on these parameters, CompositeBaaS will automatically identify and assemble a chain of services to generate a workflow that performs the required transformation. You can find example input files in the resources directory.
 
 **Currently available parameters for `input`:**
 
@@ -200,7 +200,7 @@ If you want to see this in more detail, check out the resources directory, where
 
 _Note: It is possible to implement functions in various different programming languages however layers currently expect "nodejs20x" as a runtime to work properly. Functions in other languages need to be packaged manually. For JS functions this happens automatically._
 Please refer to the official documentation on how to prepare and package functions for uploading with the SDK.
- 
+
 ### Adding a layer
 
 CompositeBaaS provides the following layers by default:

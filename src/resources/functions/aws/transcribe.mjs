@@ -152,8 +152,8 @@ function convertLanguageCode(code) {
         "cs": "cs-CZ",
         "da": "da-DK",
         "nl": "nl-NL",
-        "en": "en-US", // default to US English
         "et": "et-ET",
+        "en": "en-US", // default to US English
         "fa": "fa-IR",
         "fi": "fi-FI",
         "fr": "fr-FR",
@@ -219,7 +219,7 @@ function convertLanguageCode(code) {
     };
 
     // Check if the code is already in the full xx-XX format
-    if (code.match(/^[a-z]{2,3}(-[A-Z]{2,3})?$/)) {
+    if (code.match(/^[a-z]{2,3}-[A-Z]{2,3}$/)) {
         return code;
     }
 
