@@ -125,6 +125,7 @@ To extend CompositeBaaS by adding a custom function, follow these steps:
     "output": {
         "format": ["mp4", "avi", "mov"]
     }
+    ```
 
     This service would now introduce a new parameter format, which users can use when specifying intents. CompositeBaaS automatically picks this new parameter up.
 
