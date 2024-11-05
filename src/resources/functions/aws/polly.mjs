@@ -114,7 +114,7 @@ function convertLanguageCode(code) {
     };
 
     // Check if the code is already in the full xx-XX format
-    if (code.match(/^[a-z]{2,3}(-[A-Z]{2,3})?$/)) {
+    if (code.match(/^[a-z]{2,3}-[A-Z]{2,3}$/)) {
         return code;
     }
 

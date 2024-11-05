@@ -31,6 +31,18 @@ async function saveInS3(data, bucket, key) {
     console.log(`Saved file "${key}" in bucket "${bucket}"`);
 }
 
+function normalizeFileNames(fileNames) {
+    // Map over each group
+    const normalized = fileNames.map(group => 
+      group.map(item => Array.isArray(item) && item.length === 1 ? item[0] : item)
+    );
+  
+    // Flatten if each group has only one item
+    return normalized.every(group => group.length === 1)
+      ? normalized.flat()
+      : normalized;
+  }
+
 // Merge multiple text files from S3 where fileNames is an array of arrays
 export const handler = async (event) => {
     const body = event.body ? JSON.parse(event.body) : event; // Payload structure depends on API Gateway or direct trigger
@@ -38,10 +50,12 @@ export const handler = async (event) => {
     const inputBucket = body.inputBucket;
     const outputBucket = body.outputBucket || inputBucket;
     const mergedFiles = [];
+    const fileParts = normalizeFileNames(fileGroups);
+    console.log(normalizeFileNames(fileGroups))
 
     try {
         // Process each group of file parts
-        for (const fileParts of fileGroups) {
+        // for (const fileParts of normalizeFileNames(fileGroups)) {
             if (!Array.isArray(fileParts)) {
                 throw new Error("fileNames should be an array of arrays.");
             }
@@ -60,7 +74,7 @@ export const handler = async (event) => {
             await saveInS3(mergedText, outputBucket, outputFileName);
             console.log(`Merged file saved to S3: ${outputFileName}`);
             mergedFiles.push(outputFileName);
-        }
+        // }
 
         return {
             statusCode: 200,
