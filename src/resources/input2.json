@@ -1,4 +1,10 @@
 {
-    "input": { "type": "image", "language": "en" },
+    "input": {
+        "region": "us-east-1",
+        "bucket": "testbucket1234xc",
+        "fileNames": ["testimage1.png"],
+        "type": "image",
+        "language": "en"
+    },
     "output": { "type": "audio" }
 }

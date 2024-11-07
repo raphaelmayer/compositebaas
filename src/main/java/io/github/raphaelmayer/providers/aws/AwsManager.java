@@ -25,7 +25,9 @@ public class AwsManager implements ProviderManager {
     private final List<String> lambdaPolicies = List.of(
             "arn:aws:iam::aws:policy/AmazonS3FullAccess",
             "arn:aws:iam::aws:policy/AmazonTranscribeFullAccess",
-            "arn:aws:iam::aws:policy/TranslateFullAccess");
+            "arn:aws:iam::aws:policy/TranslateFullAccess",
+            "arn:aws:iam::aws:policy/AmazonTextractFullAccess",
+            "arn:aws:iam::aws:policy/AmazonPollyFullAccess");
 
     private final StsService sts;
     private final IamService iam;
